@@ -1,28 +1,56 @@
-# Rock-Paper-Scissors Game
+# Rock-Paper-Scissors
 
-A simple and interactive Rock-Paper-Scissors web game built with HTML, CSS, and JavaScript. Players can choose Rock, Paper, or Scissors and play against the computer, with animations, score tracking, and a match log included.
+A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaScript. Choose your move and see if you can beat the computer!
+
+> 🎨 All hand gesture images used in the game were **created manually using Microsoft Paint** by me.
+
+> 🌐 The game is also **deployed live on Netlify**:  
+👉 [`https://your-custom-url.netlify.app`](https://rock-paper-scissors-pr0ject.netlify.app/)
+
+[Netlify Status](https://your-site-name.netlify.app)
+
 
 ## 🎮 Features
 
-- Interactive UI with player/computer hand animations
-- Live scoreboard and result display
-- Game log that records each round
-- Reset button to clear logs and scores
-- Responsive buttons with visual feedback
+- Clickable Rock / Paper / Scissors buttons
+- Animated player and computer hand movements
+- Live scoreboard display
+- Game log showing Win / Lose / Draw results
+- Reset button to restart the game and clear the log
 
-## 🛠️ Technologies Used
+## 📸 Preview
 
-<p align="left">
-  <img src="https://img.shields.io/badge/-HTML5-E34F26?style=flat-square&logo=html5&logoColor=ffffff" alt="HTML5">
-  <img src="https://img.shields.io/badge/-CSS3-1572B6?style=flat-square&logo=css3" alt="CSS3">
-  <img src="https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=000" alt="JavaScript">
+> *You can insert a screenshot of your game here (e.g., `img/demo.png`).*
+
+## 🧑‍💻 Technologies
+
+- **HTML5** – page structure
+- **CSS3** – layout, animations, styling
+- **JavaScript (vanilla)** – game logic and interactivity
+
+<p>
+  <img src="https://img.shields.io/badge/-HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=ffffff" />
+  <img src="https://img.shields.io/badge/-CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=ffffff" />
+  <img src="https://img.shields.io/badge/-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000" />
 </p>
 
-## 📂 File Structure
+## 🕹️ Game Rules
 
-<details>
-    <summary>📂</summary>
+- Rock beats Scissors
+- Scissors beats Paper
+- Paper beats Rock
 
+## ✏️ How to Play
+
+1. Click one of the Rock / Paper / Scissors buttons to make your choice.
+2. Click the Play button to see the result.
+3. The result and updated score will be displayed.
+4. The log will record each round’s result.
+5. Click the Reset button to clear the scores and logs.
+
+<details> 
+  <summary>📂 File Structure</summary>
+  
 ```bash
 .
 └── Rock-Paper-Scissors/
@@ -67,5 +95,5 @@ A simple and interactive Rock-Paper-Scissors web game built with HTML, CSS, and 
             ├── scissors-left.png
             ├── scissors-right.png
             └── scissors.png
-```
+  ```
 </details>
