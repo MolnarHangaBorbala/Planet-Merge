@@ -1,14 +1,18 @@
 # Rock-Paper-Scissors
 
+---
+
 A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaScript. Choose your move and see if you can beat the computer!
 
 > 🎨 All hand gesture images used in the game were **created manually using Microsoft Paint** by me.
 
 > 🌐 The game is also **deployed live on Netlify**:  
-👉 [`https://your-custom-url.netlify.app`](https://rock-paper-scissors-pr0ject.netlify.app/)
 
-[Netlify Status](https://your-site-name.netlify.app)
+[![Live on Netlify](https://img.shields.io/badge/Live_on-Netlify-brightgreen?style=for-the-badge&logo=netlify&logoColor=white)](https://rock-paper-scissors-pr0ject.netlify.app/)
 
+[https://rock-paper-scissors-pr0ject.netlify.app/](https://rock-paper-scissors-pr0ject.netlify.app/)
+
+---
 
 ## 🎮 Features
 
@@ -18,9 +22,13 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 - Game log showing Win / Lose / Draw results
 - Reset button to restart the game and clear the log
 
+---
+
 ## 📸 Preview
 
 > *You can insert a screenshot of your game here (e.g., `img/demo.png`).*
+
+---
 
 ## 🧑‍💻 Technologies
 
@@ -34,11 +42,15 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
   <img src="https://img.shields.io/badge/-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000" />
 </p>
 
+---
+
 ## 🕹️ Game Rules
 
 - Rock beats Scissors
 - Scissors beats Paper
 - Paper beats Rock
+
+---
 
 ## ✏️ How to Play
 
@@ -47,6 +59,8 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 3. The result and updated score will be displayed.
 4. The log will record each round’s result.
 5. Click the Reset button to clear the scores and logs.
+
+---
 
 <details> 
   <summary>📂 File Structure</summary>
