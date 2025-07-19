@@ -20,7 +20,11 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 
 ## 📸 Preview
 
-> *You can insert a screenshot of your game here (e.g., `img/demo.png`).*
+<details>
+  <summary>Details</summary>
+  
+  <img width="1531" height="831" alt="image" src="https://github.com/user-attachments/assets/125ff45c-2e96-4345-8c16-48dd7d6246ab" />
+</details>
 
 ## 🧑‍💻 Technologies
 
