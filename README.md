@@ -17,6 +17,7 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 - Live scoreboard display
 - Game log showing Win / Lose / Draw results
 - Reset button to restart the game and clear the log
+- Favicon from [flaticon.com](https://www.flaticon.com/free-icon/rock_6587391?term=rock+paper+scissors&page=1&position=33&origin=tag&related_id=6587391)
 
 ## 📸 Preview
 
@@ -63,6 +64,7 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
     ├── RPSstyle.css
     ├── README.md
     └── img/
+        ├── favicon.png
         ├── paper/
         │   ├── no-bg-2/
         │   │   ├── paper-left-no-bg-2.png
