@@ -65,6 +65,9 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
     ├── README.md
     └── img/
         ├── favicon.png
+        ├── cursor/
+        │   ├── pixel.cur
+        │   ├── pixel_link.cur
         ├── paper/
         │   ├── no-bg-2/
         │   │   ├── paper-left-no-bg-2.png
