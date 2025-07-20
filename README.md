@@ -39,13 +39,13 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
   <img src="https://img.shields.io/badge/-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000" />
 </p>
 
-## 🕹️ Game Rules
+## ✏️ Game Rules
 
 - Rock beats Scissors
 - Scissors beats Paper
 - Paper beats Rock
 
-## ✏️ How to Play
+## 🕹️ How to Play
 
 1. Click one of the Rock / Paper / Scissors buttons to make your choice.
 2. Click the Play button to see the result.
