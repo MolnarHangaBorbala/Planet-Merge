@@ -53,6 +53,11 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 4. The log will record each round’s result.
 5. Click the Reset button to clear the scores and logs.
 
+## Future Features
+
+- Two player
+- Online two player
+
 <details> 
   <summary>📂 File Structure</summary>
   
