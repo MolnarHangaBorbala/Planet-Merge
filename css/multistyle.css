@@ -193,7 +193,7 @@ h1 {
     cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
 }
 
-#Playbtn:hover {
+.Playbtn:hover {
     background-color: rgb(224, 224, 224);
 }
 
