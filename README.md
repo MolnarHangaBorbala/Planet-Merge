@@ -65,49 +65,66 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 .
 └── Rock-Paper-Scissors/
     ├── index.html
-    ├── RPSscr.js
-    ├── RPSstyle.css
-    ├── README.md
+    ├── css/
+    │   ├── compstyle.css
+    │   ├── indexstyle.css
+    │   └── multistyle.css
+    ├── html/
+    │   ├── comp.html
+    │   └── multi.html
+    ├── js/
+    │   ├── compsrc.js
+    │   ├── indexsrc.js
+    │   └── multisrc.js
     └── img/
-        ├── favicon.png
         ├── cursor/
         │   ├── pixel.cur
-        │   ├── pixel_link.cur
-        ├── paper/
-        │   ├── no-bg-2/
-        │   │   ├── paper-left-no-bg-2.png
-        │   │   ├── paper-no-bg-2.png
-        │   │   └── paper-right-no-bg-2.png
-        │   ├── no-bg/
-        │   │   ├── paper-left-no-bg.png
-        │   │   ├── paper-no-bg.png
-        │   │   └── paper-right-no-bg.png
-        │   ├── paper-left.png
-        │   ├── paper-right.png
-        │   └── paper.png
+        │   └── pixel_link.cur
+        ├── icons/
+        │   ├── favicon.png
+        │   ├── exit.png
+        │   └── check.png
+        ├── playervsx/
+        │   ├── pvsc.png
+        │   ├── pvsp.png
+        │   └── no-bg-2/
+        │       ├── pvsc-no-bg-2.png
+        │       └── pvsp-no-bg-2.png        
         ├── rock/
-        │   ├── no-bg-2/
-        │   │   ├── rock-left-no-bg-2.png
-        │   │   ├── rock-no-bg-2.png
-        │   │   └── rock-right-no-bg-2.png
-        │   ├── no-bg/
-        │   │   ├── rock-left-no-bg.png
-        │   │   ├── rock-no-bg.png
-        │   │   └── rock-right-no-bg.png
         │   ├── rock-left.png
         │   ├── rock-right.png
-        │   └── rock.png
+        │   ├── rock.png
+        │   ├── no-bg/
+        │   │   ├── rock-left-no-bg.png
+        │   │   ├── rock-right-no-bg.png
+        │   │   └── rock-no-bg.png
+        │   └── no-bg-2/
+        │       ├── rock-left-no-bg-2.png
+        │       ├── rock-right-no-bg-2.png
+        │       └── rock-no-bg-2.png
+        ├── paper/
+        │   ├── paper-left.png
+        │   ├── paper-right.png
+        │   ├── paper.png
+        │   ├── no-bg/
+        │   │   ├── paper-left-no-bg.png
+        │   │   ├── paper-right-no-bg.png
+        │   │   └── paper-no-bg.png
+        │   └── no-bg-2/
+        │       ├── paper-left-no-bg-2.png
+        │       ├── paper-right-no-bg-2.png
+        │       └── paper-no-bg-2.png
         └── scissors/
-            ├── no-bg-2/
-            │   ├── scissors-left-no-bg-2.png
-            │   ├── scissors-no-bg-2.png
-            │   └── scissors-right-no-bg-2.png
-            ├── no-bg/
-            │   ├── scissors-left-no-bg.png
-            │   ├── scissors-no-bg.png
-            │   └── scissors-right-no-bg.png
             ├── scissors-left.png
             ├── scissors-right.png
-            └── scissors.png
+            ├── scissors.png
+            ├── no-bg/
+            │   ├── scissors-left-no-bg.png
+            │   ├── scissors-right-no-bg.png
+            │   └── scissors-no-bg.png
+            └── no-bg-2/
+                ├── scissors-left-no-bg-2.png
+                ├── scissors-right-no-bg-2.png
+                └── scissors-no-bg-2.png
   ```
 </details>
