@@ -76,6 +76,10 @@ playButton.addEventListener("click", () => {
     paperButton.disabled = true;
     scissorsButton.disabled = true;
 
+    playButton.classList.add("no-link");
+    playButton.classList.remove("link");
+    playButton.classList.remove("Playbtn");
+
     rockButton.classList.add("opa");
     paperButton.classList.add("opa");
     scissorsButton.classList.add("opa");
