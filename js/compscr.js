@@ -118,11 +118,11 @@ playButton.addEventListener("click", () => {
         }
 
         if (computerChoice === "|R|") {
-            RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png"
+            RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
         } else if (computerChoice === "|P|") {
-            RightPlayer.src = "../img/paper/no-bg-2/paper-left-no-bg-2.png"
+            RightPlayer.src = "../img/paper/no-bg-2/paper-left-no-bg-2.png";
         } else if (computerChoice === "|S|") {
-            RightPlayer.src = "../img/scissors/no-bg-2/scissors-left-no-bg-2.png"
+            RightPlayer.src = "../img/scissors/no-bg-2/scissors-left-no-bg-2.png";
         }
 
         ScoreText.textContent = `${userScore} x ${computerScore}`;

@@ -30,6 +30,10 @@ RCheckButton.classList.remove("link");
 RCheckButton.classList.remove("CheckBtnHov");
 RCheckButton.style.opacity = "0.5";
 
+playButton.classList.add("no-link");
+playButton.classList.remove("link");
+playButton.classList.remove("Playbtn");
+
 rockButton1.addEventListener("click", () => {
     RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
     LeftPlayer.src = "../img/rock/no-bg-2/rock-right-no-bg-2.png";
@@ -124,6 +128,9 @@ RCheckButton.addEventListener("click", () => {
     RCheckButton.classList.remove("link");
     RCheckButton.classList.remove("CheckBtnHov");
     RCheckButton.style.opacity = "0.5";
+    playButton.classList.add("Playbtn");
+    playButton.classList.remove("no-link");
+    playButton.classList.add("link");
 });
 
 /* --------------------------------------------------------------------------------- */
@@ -149,6 +156,9 @@ playButton.addEventListener("click", () => {
     RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
     LeftPlayer.src = "../img/rock/no-bg-2/rock-right-no-bg-2.png";
 
+    playButton.classList.remove("link");
+    playButton.classList.add("no-link");
+    playButton.classList.remove("Playbtn");
 
     setTimeout(() => {
         RightPlayer.classList.remove("animate");
@@ -182,11 +192,11 @@ playButton.addEventListener("click", () => {
         }
 
         if (player2Choice === "|R|") {
-            RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png"
+            RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
         } else if (player2Choice === "|P|") {
-            RightPlayer.src = "../img/paper/no-bg-2/paper-left-no-bg-2.png"
+            RightPlayer.src = "../img/paper/no-bg-2/paper-left-no-bg-2.png";
         } else if (player2Choice === "|S|") {
-            RightPlayer.src = "../img/scissors/no-bg-2/scissors-left-no-bg-2.png"
+            RightPlayer.src = "../img/scissors/no-bg-2/scissors-left-no-bg-2.png";
         }
 
         ScoreText.textContent = `${player1} x ${player2}`;
