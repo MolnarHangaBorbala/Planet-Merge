@@ -1,0 +1,276 @@
+html {
+    cursor: url(../img/cursor/pixel.cur) 1 1, auto;
+}
+
+body {
+    background-color: beige;
+    font-family: monospace;
+}
+
+.CustomNav,
+.OuterContainer,
+.OuterScoreContainer,
+#Playbtn,
+.rRPSbtn,
+.lRPSbtn {
+    box-shadow: 0 8px 6px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.CustomNav {
+    top: 0;
+    height: fit-content;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.76);
+    border-radius: 25px;
+}
+
+h1 {
+    font-size: 30px;
+    color: beige;
+}
+
+#title {
+    margin-left: 120px;
+}
+
+.OuterContainer {
+    background-color: rgb(202, 202, 190);
+    border-radius: 15px;
+    height: 460px;
+    width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 60px;
+    padding: 10px;
+    padding-top: 80px;
+}
+
+.LeftContainer {
+    width: 400px;
+    float: left;
+    height: 310px;
+    text-align: center;
+}
+
+.RightContainer {
+    width: 400px;
+    float: left;
+    height: 310px;
+    text-align: center;
+}
+
+.OuterScoreContainer {
+    background-color: rgb(46, 46, 46);
+    width: 260px;
+    float: left;
+    height: 310px;
+    padding: 0px 18px;
+    text-align: center;
+    border-radius: 15px;
+    border: 2px black solid;
+}
+
+#ScoreBoardID {
+    height: 30px;
+    margin-bottom: 15px;
+}
+
+.ScoreContainer {
+    background-color: rgb(78, 78, 78);
+    height: 225px;
+    border: 1px black solid;
+    overflow: hidden;
+}
+
+#ResultText,
+.ScoreContainer li {
+    padding-bottom: 4px;
+    border-bottom: 1px rgb(0, 0, 0) solid;
+    list-style-type: none;
+    margin-bottom: 2px;
+    color: aliceblue;
+}
+
+.log {
+    margin: 0px 0px;
+    text-align: left;
+    color: aliceblue;
+}
+
+.LogContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    background-color: grey;
+    border-bottom: 1px black solid;
+}
+
+.reset {
+    background-color: grey;
+    border-radius: 8px;
+    border: 1px solid gray;
+    padding: 2px 4px;
+    font-family: monospace;
+    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
+    color: rgb(212, 212, 212);
+}
+
+.reset:hover {
+    color: rgb(255, 255, 255);
+}
+
+#LogBook {
+    list-style: none;
+    padding-left: 0px;
+    margin-left: 0;
+}
+
+#LogBook li {
+    text-align: left;
+    padding: 0px 0px 5px 10px;
+    font-size: small;
+    margin-top: 3px;
+}
+
+#ResultText {
+    padding: 6px;
+    font-size: x-large;
+    background-color: rgb(46, 46, 46);
+    margin-top: 0px;
+}
+
+.LowerContainer {
+    float: left;
+    width: 1100px;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.RPSimg {
+    height: 70px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.rRPSbtn,
+.lRPSbtn {
+    margin: 0px 5px;
+    border-radius: 10px;
+    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
+    background-color: rgba(252, 252, 252, 1);
+    padding: 5px;
+    transition: background-color 0.3s;
+}
+
+.animate {
+    animation: bounce 0.75s ease-in-out 3;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1) translateY(0);
+    }
+
+    50% {
+        transform: scale(1) translateY(-30px);
+    }
+}
+
+.InnerScoreContainer {
+    height: 400px;
+}
+
+#Playbtn {
+    margin-top: 35px;
+    height: 70px;
+    width: 120px;
+    border-radius: 15px;
+    font-family: cursive;
+    font-size: 25px;
+    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
+}
+
+#Playbtn:hover {
+    background-color: rgb(224, 224, 224);
+}
+
+.log-P1-win,
+.log-P2-win,
+.log-draw {
+    transition: color 0.3s;
+}
+
+.log-draw {
+    color: rgb(211, 208, 58) !important;
+}
+
+.log-P1-win {
+    color: rgb(211, 58, 104) !important;
+}
+
+.log-P2-win {
+    color: rgb(58, 137, 211) !important;
+}
+
+ul li {
+    font-weight: italic;
+}
+
+#check {
+    height: 30px;
+    border: 1px black solid;
+    border-radius: 5px;
+}
+
+.CheckBtn {
+    background-color: transparent;
+    border-color: transparent;
+    padding: 5px;
+    border-radius: 10px;
+    opacity: 0.5;
+}
+
+.CheckBtnHov:hover {
+    background-color: rgb(175, 175, 167);
+}
+
+.LowerLeftContainer,
+.LowerRightContainer {
+    float: left;
+}
+
+.LowerLeftContainer {
+    display: block;
+    margin-left: 50px;
+    margin-right: 200px;
+}
+
+.LowerRightContainer {
+    display: none;
+    margin-left: 750px;
+}
+
+.no-link {
+    cursor: url(../img/cursor/pixel.cur) 1 1, auto;
+}
+
+.link {
+    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
+}
+
+#exitIcon {
+    height: 50px;
+    float: left;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+#exitIcon:hover {
+    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
+    background-color: rgba(102, 102, 102, 0.76);
+    transition: background-color 0.3s;
+}
