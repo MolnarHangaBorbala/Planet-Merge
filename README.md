@@ -12,6 +12,7 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 
 ## 🎮 Features
 
+- Choosable gamemode
 - Clickable Rock / Paper / Scissors buttons
 - Animated player and computer hand movements
 - Live scoreboard display
@@ -47,16 +48,16 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 
 ## 🕹️ How to Play
 
-1. Click one of the Rock / Paper / Scissors buttons to make your choice.
-2. Click the Play button to see the result.
-3. The result and updated score will be displayed.
-4. The log will record each round’s result.
-5. Click the Reset button to clear the scores and logs.
+1. Choose a gamemode (player vs player/player vs computer)
+2. Click one of the Rock / Paper / Scissors buttons to make your choice.
+3. Click the Play button to see the result.
+4. The result and updated score will be displayed.
+5. The log will record each round’s result.
+6. Click the Reset button to clear the scores and logs.
 
 ## Future Features
 
-- Two player
-- Online two player
+-none-
 
 <details> 
   <summary>📂 File Structure</summary>
