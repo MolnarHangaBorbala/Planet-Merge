@@ -16,20 +16,22 @@
 
     <div class="OuterContainer">
         <div class="LeftContainer">
-            <button class="GamemodeBtn" id="MultiBtn" disabled>
+            <button class="GamemodeBtn sound-class" id="MultiBtn" disabled>
                 <img src="../img/playervsx/no-bg-2/pvsp-no-bg-2.png" alt="multi" style="height: 200px;">
             </button>
         </div>
         <div class="RightContainer">
-            <button class="GamemodeBtn" id="CompBtn" disabled>
+            <button class="GamemodeBtn sound-class" id="CompBtn" disabled>
                 <img src="../img/playervsx/no-bg-2/pvsc-no-bg-2.png" alt="comp" style="height: 200px;">
             </button>
         </div>
         <h3 id="loading">Loading<span class="dots"></span></h3>
-        <button id="Playbtn" disabled>Play</button>
+        <button id="Playbtn" class="sound-class" disabled>Play</button>
     </div>
 
+    <audio id="hoverSound" src="sfx/click.mp3" preload="auto"></audio>
     <script src="js/indexscr.js"></script>
+    <script src="js/audioscr.js"></script>
 </body>
 
 </html>
