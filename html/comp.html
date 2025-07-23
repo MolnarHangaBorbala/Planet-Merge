@@ -11,7 +11,7 @@
 
 <body>
     <div class="CustomNav">
-        <a href="../index.html" style="text-decoration: none">
+        <a onclick="home()" style="text-decoration: none" class="sound-class">
             <img src="../img/icons/exit.png" alt="Exit icon" id="exitIcon">
         </a>
         <h1 id="title">Player VS Computer</h1>
@@ -29,11 +29,11 @@
                         <p id="ResultText">Play!</p>
                         <div class="LogContainer">
                             <p class="log">Log Book</p>
-                            <button onclick="clearLog()" class="reset">Reset</button>
+                            <button onclick="clearLog()" class="reset sound-class">Reset</button>
                         </div>
                         <ul id="LogBook"></ul>
                     </div>
-                    <button id="Playbtn" disabled>Start</button>
+                    <button id="Playbtn" class="sound-class" disabled>Start</button>
                 </div>
             </div>
             <div class="RightContainer">
@@ -41,16 +41,19 @@
                     style="height: 300px;">
             </div>
             <div class="LowerContainer">
-                <button class="RPSbtn" id="Rock"><img class="RPSimg" src="../img/rock/no-bg-2/rock-no-bg-2.png"
-                        alt="Rock"></button>
-                <button class="RPSbtn" id="Paper"><img class="RPSimg" src="../img/paper/no-bg/paper-no-bg.png"
-                        alt="Paper"></button>
-                <button class="RPSbtn" id="Scissors"><img class="RPSimg" src="../img/scissors/no-bg/scissors-no-bg.png"
-                        alt="Scissors"></button>
+                <button class="RPSbtn sound-class" id="Rock">
+                    <img class="RPSimg" src="../img/rock/no-bg-2/rock-no-bg-2.png" alt="Rock"></button>
+                <button class="RPSbtn sound-class" id="Paper">
+                    <img class="RPSimg" src="../img/paper/no-bg/paper-no-bg.png" alt="Paper"></button>
+                <button class="RPSbtn sound-class" id="Scissors">
+                    <img class="RPSimg" src="../img/scissors/no-bg/scissors-no-bg.png" alt="Scissors"></button>
             </div>
         </div>
     </div>
+
+    <audio id="hoverSound" src="../sfx/click.mp3" preload="auto"></audio>
     <script src="../js/compscr.js"></script>
+    <script src="../js/audioscr.js"></script>
 
 
     <img src="../img/paper/no-bg-2/paper-left-no-bg-2.png" style="display:none;">
