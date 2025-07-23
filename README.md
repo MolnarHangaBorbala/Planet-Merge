@@ -57,7 +57,7 @@ A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaSc
 
 ## Future Features
 
-- sounds
+- sfx
 
 <details> 
   <summary>📂 File Structure</summary>
