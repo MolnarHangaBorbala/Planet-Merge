@@ -239,3 +239,9 @@ function clearLog() {
     LCheckButton.disabled = true;
     RCheckButton.disabled = true;
 }
+
+function home() {
+    setTimeout(() => {
+        window.location.href = "../index.html";
+    }, 250); 
+};

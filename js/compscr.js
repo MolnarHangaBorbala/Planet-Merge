@@ -162,3 +162,9 @@ function clearLog() {
     scissorsButton.style.backgroundColor = "rgba(252, 252, 252, 1)";
     playButton.disabled = true;
 }
+
+function home() {
+    setTimeout(() => {
+        window.location.href = "../index.html";
+    }, 250); 
+};
