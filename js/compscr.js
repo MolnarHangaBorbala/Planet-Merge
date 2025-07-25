@@ -12,6 +12,7 @@ const LeftPlayer = document.getElementById("PlayerLeft");
 const ScoreText = document.getElementById("ScoreBoardID");
 const ResultText = document.getElementById("ResultText");
 const logBook = document.getElementById("LogBook");
+const resultSound = document.getElementById("resultSound");
 
 playButton.classList.add("no-link");
 playButton.classList.remove("link");
@@ -139,8 +140,10 @@ playButton.addEventListener("click", () => {
         rockButton.classList.remove("opa");
         paperButton.classList.remove("opa");
         scissorsButton.classList.remove("opa");
-    }, 2550);
 
+        resultSound.currentTime = 0;
+        resultSound.play();
+    }, 2550);
     playButton.disabled = true;
 });
 
@@ -166,5 +169,5 @@ function clearLog() {
 function home() {
     setTimeout(() => {
         window.location.href = "../index.html";
-    }, 250); 
+    }, 250);
 };

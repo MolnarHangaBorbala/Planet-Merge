@@ -19,7 +19,7 @@ const LCheckButton = document.getElementById("LeftCheckBtn");
 const RCheckButton = document.getElementById("RightCheckBtn");
 const LleftCont = document.querySelector(".LowerLeftContainer");
 const LrightCont = document.querySelector(".LowerRightContainer");
-const countdownSound = document.getElementById("countdownSound");
+const resultSound = document.getElementById("resultSound");
 
 LCheckButton.classList.add("no-link");
 LCheckButton.classList.remove("link");
@@ -211,6 +211,9 @@ playButton.addEventListener("click", () => {
         rockButton2.style.backgroundColor = "rgba(255, 255, 255, 1)";
         paperButton2.style.backgroundColor = "rgba(252, 252, 252, 1)";
         scissorsButton2.style.backgroundColor = "rgba(252, 252, 252, 1)";
+
+        resultSound.currentTime = 0;
+        resultSound.play();
     }, 2550);
     playButton.disabled = true;
     LCheckButton.disabled = true;
