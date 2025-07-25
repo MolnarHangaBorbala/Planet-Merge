@@ -2,6 +2,7 @@ const MultiBtn = document.getElementById("MultiBtn");
 const CompBtn = document.getElementById("CompBtn");
 const playButton = document.getElementById("Playbtn");
 const LoadingText = document.getElementById("loading");
+const overlay = document.getElementById('fadeOverlay');
 LoadingText.style.opacity = "0";
 
 MultiBtn.disabled = false;
@@ -37,11 +38,14 @@ playButton.addEventListener("click", () => {
     LoadingText.style.opacity = "1";
     MultiBtn.disabled = true;
     CompBtn.disabled = true;
+
+    overlay.classList.remove('fade-in');
+    overlay.classList.add('fade-out');
     setTimeout(() => {
         if (btn === 1) {
             window.location.href = "html/multi.html";
         } else if (btn === 2) {
             window.location.href = "html/comp.html";
         }
-    }, 1500);
+}, 1050);
 });

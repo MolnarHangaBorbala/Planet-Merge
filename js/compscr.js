@@ -139,7 +139,7 @@ playButton.addEventListener("click", () => {
         rockButton.classList.remove("opa");
         paperButton.classList.remove("opa");
         scissorsButton.classList.remove("opa");
-    }, 2250);
+    }, 2550);
 
     playButton.disabled = true;
 });

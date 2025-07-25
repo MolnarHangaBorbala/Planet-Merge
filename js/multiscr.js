@@ -19,6 +19,7 @@ const LCheckButton = document.getElementById("LeftCheckBtn");
 const RCheckButton = document.getElementById("RightCheckBtn");
 const LleftCont = document.querySelector(".LowerLeftContainer");
 const LrightCont = document.querySelector(".LowerRightContainer");
+const countdownSound = document.getElementById("countdownSound");
 
 LCheckButton.classList.add("no-link");
 LCheckButton.classList.remove("link");
@@ -156,8 +157,8 @@ playButton.addEventListener("click", () => {
     RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
     LeftPlayer.src = "../img/rock/no-bg-2/rock-right-no-bg-2.png";
 
-    playButton.classList.remove("link");
     playButton.classList.add("no-link");
+    playButton.classList.remove("link");
     playButton.classList.remove("Playbtn");
 
     setTimeout(() => {
@@ -210,7 +211,7 @@ playButton.addEventListener("click", () => {
         rockButton2.style.backgroundColor = "rgba(255, 255, 255, 1)";
         paperButton2.style.backgroundColor = "rgba(252, 252, 252, 1)";
         scissorsButton2.style.backgroundColor = "rgba(252, 252, 252, 1)";
-    }, 2250);
+    }, 2550);
     playButton.disabled = true;
     LCheckButton.disabled = true;
     RCheckButton.disabled = true;
@@ -243,5 +244,5 @@ function clearLog() {
 function home() {
     setTimeout(() => {
         window.location.href = "../index.html";
-    }, 250); 
+    }, 250);
 };
