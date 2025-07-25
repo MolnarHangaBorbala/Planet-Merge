@@ -25,7 +25,8 @@ body {
 
 .RPSbtn,
 #exitIcon,
-.Playbtn {
+.Playbtn,
+#speakerIcon {
     transition: background-color 0.3s;
 }
 
