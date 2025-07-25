@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/compstyle.css">
+    <link rel="stylesheet" href="../css/fadeoverlay.css">
     <link rel="icon" type="image/x-icon" href="../img/icons/favicon.png">
     <title>Player VS Computer</title>
 </head>
@@ -15,6 +16,9 @@
             <img src="../img/icons/exit.png" alt="Exit icon" id="exitIcon">
         </a>
         <h1 id="title">Player VS Computer</h1>
+        <a onclick="speaker()" class="sound-class">
+            <img src="../img/icons/muteBtn.png" alt="Speaker icon" id="speakerIcon">
+        </a>
     </div>
     <div class="OuterContainer">
         <div class="UpperContainer">
@@ -51,10 +55,13 @@
         </div>
     </div>
 
-    <audio id="hoverSound" src="../sfx/click.mp3" preload="auto"></audio>
+    <div id="fadeOverlay" class="fade-in-start"></div>
+
+    <audio id="clickSound" src="../sfx/click.mp3" preload="auto"></audio>
+    <audio id="BgMusic" src="../sfx/bg-music.mp3" preload="auto" autoplay></audio>
     <script src="../js/compscr.js"></script>
     <script src="../js/audioscr.js"></script>
-
+    <script src="../js/fadeoverlayscr.js"></script>
 
     <img src="../img/paper/no-bg-2/paper-left-no-bg-2.png" style="display:none;">
     <img src="../img/paper/no-bg-2/paper-right-no-bg-2.png" style="display:none;">
