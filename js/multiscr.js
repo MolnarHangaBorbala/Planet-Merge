@@ -20,6 +20,7 @@ const RCheckButton = document.getElementById("RightCheckBtn");
 const LleftCont = document.querySelector(".LowerLeftContainer");
 const LrightCont = document.querySelector(".LowerRightContainer");
 const resultSound = document.getElementById("resultSound");
+const RPSsound = document.getElementById("RPSsound");
 
 LCheckButton.classList.add("no-link");
 LCheckButton.classList.remove("link");
@@ -152,6 +153,19 @@ function addLogEntry(player1Choice, player2Choice, resultText) {
 }
 
 playButton.addEventListener("click", () => {
+    const delay = 650;
+
+    function playSoundRepeatedly(times, delay) {
+        for (let i = 0; i < times; i++) {
+            setTimeout(() => {
+                RPSsound.currentTime = 0;
+                RPSsound.play();
+            }, i * delay);
+        }
+    }
+
+    playSoundRepeatedly(3, delay);
+
     RightPlayer.classList.add("animate");
     LeftPlayer.classList.add("animate");
     RightPlayer.src = "../img/rock/no-bg-2/rock-left-no-bg-2.png";
@@ -214,7 +228,7 @@ playButton.addEventListener("click", () => {
 
         resultSound.currentTime = 0;
         resultSound.play();
-    }, 2550);
+    }, 1900);
     playButton.disabled = true;
     LCheckButton.disabled = true;
     RCheckButton.disabled = true;

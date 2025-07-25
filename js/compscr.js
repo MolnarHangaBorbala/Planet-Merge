@@ -13,6 +13,7 @@ const ScoreText = document.getElementById("ScoreBoardID");
 const ResultText = document.getElementById("ResultText");
 const logBook = document.getElementById("LogBook");
 const resultSound = document.getElementById("resultSound");
+const RPSsound = document.getElementById("RPSsound");
 
 playButton.classList.add("no-link");
 playButton.classList.remove("link");
@@ -87,6 +88,19 @@ playButton.addEventListener("click", () => {
 
     const computerChoice = choices[Math.floor(Math.random() * choices.length)]
 
+    const delay = 650;
+
+    function playSoundRepeatedly(times, delay) {
+        for (let i = 0; i < times; i++) {
+            setTimeout(() => {
+                RPSsound.currentTime = 0;
+                RPSsound.play();
+            }, i * delay);
+        }
+    }
+
+    playSoundRepeatedly(3, delay);
+
     setTimeout(() => {
         RightPlayer.classList.remove("animate");
         LeftPlayer.classList.remove("animate");
@@ -143,7 +157,7 @@ playButton.addEventListener("click", () => {
 
         resultSound.currentTime = 0;
         resultSound.play();
-    }, 2550);
+    }, 1900);
     playButton.disabled = true;
 });
 
