@@ -18,3 +18,20 @@ function home() {
         window.location.href = "../index.html";
     }, 1050);
 }
+
+/* Full Screen--------------------------------------------------------------- */
+const OuterContID = document.getElementById("OuterContID");
+
+function isMaybeF11Fullscreen() {
+    return window.innerHeight === screen.height || window.outerHeight === screen.height;
+}
+
+window.addEventListener("resize", () => {
+    if (isMaybeF11Fullscreen()) {
+        console.log("User likely pressed F11 for fullscreen.");
+        OuterContID.style.marginTop = "150px";
+    } else {
+        console.log("Not in F11 fullscreen.");
+        OuterContID.style.marginTop = "60px";
+    }
+});
