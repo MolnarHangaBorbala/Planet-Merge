@@ -1,5 +1,13 @@
 html {
     cursor: url(../img/cursor/pixel.cur) 1 1, auto;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+img {
+    -webkit-user-drag: none;
 }
 
 body {
@@ -16,21 +24,28 @@ body {
     box-shadow: 0 8px 6px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+.rRPSbtn,
+.lRPSbtn,
+.Playbtn,
+.CheckBtnHov,
+#exitIcon,
+#speakerIcon {
+    transition: background-color 0.3s;
+}
+
 .CustomNav {
-    top: 0;
-    height: fit-content;
-    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 15px;
     background-color: rgba(0, 0, 0, 0.76);
     border-radius: 25px;
+    height: 80px;
 }
 
 h1 {
     font-size: 30px;
     color: beige;
-}
-
-#title {
-    margin-left: 120px;
 }
 
 .OuterContainer {
@@ -160,11 +175,10 @@ h1 {
     cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
     background-color: rgba(252, 252, 252, 1);
     padding: 5px;
-    transition: background-color 0.3s;
 }
 
 .animate {
-    animation: bounce 0.75s ease-in-out 3;
+    animation: bounce 0.65s ease-in-out 4;
 }
 
 @keyframes bounce {
@@ -190,7 +204,6 @@ h1 {
     border-radius: 15px;
     font-family: cursive;
     font-size: 25px;
-    cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
 }
 
 .Playbtn:hover {
@@ -261,16 +274,17 @@ ul li {
     cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
 }
 
-#exitIcon {
+#exitIcon,
+#speakerIcon {
     height: 50px;
-    float: left;
     margin: 10px;
     padding: 5px;
     border-radius: 10px;
+    float: left;
 }
 
-#exitIcon:hover {
+#exitIcon:hover,
+#speakerIcon:hover {
     cursor: url(../img/cursor/pixel_link.cur) 8 1, auto;
     background-color: rgba(102, 102, 102, 0.76);
-    transition: background-color 0.3s;
 }
