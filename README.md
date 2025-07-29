@@ -1,12 +1,12 @@
 # Rock-Paper-Scissors
 
+[![Live on Netlify](https://img.shields.io/badge/Live_on-Netlify-brightgreen?style=for-the-badge&logo=netlify&logoColor=white)](https://rock-paper-scissors-pr0ject.netlify.app/)
+
 A simple, animated **Rock-Paper-Scissors** game built with HTML, CSS, and JavaScript. Choose your move and see if you can beat the computer!
 
 > 🎨 All hand gesture images used in the game were **created manually using Microsoft Paint** by me.
 
 > 🌐 The game is also **deployed live on Netlify**:  
-
-[![Live on Netlify](https://img.shields.io/badge/Live_on-Netlify-brightgreen?style=for-the-badge&logo=netlify&logoColor=white)](https://rock-paper-scissors-pr0ject.netlify.app/)
 
 [https://rock-paper-scissors-pr0ject.netlify.app/](https://rock-paper-scissors-pr0ject.netlify.app/)
 
