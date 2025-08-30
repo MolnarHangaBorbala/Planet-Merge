@@ -1,0 +1,79 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: rgb(0, 3, 32);
+    overflow: hidden;
+}
+
+/* STAR BACKGROUND */
+#stars-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    animation: blink 2s ease-in-out infinite;
+}
+
+/* GAME CONTAINER */
+#game-container {
+    position: relative;
+    width: 600px;
+    height: 800px;
+    margin: 30px auto 0 auto;
+    z-index: 1;
+}
+
+/* OVERLAY CANVAS */
+#overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* PLANET PREVIEW OUTSIDE GAME */
+#preview-container {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+}
+
+#preview-label {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+#next-planet-preview {
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.212);
+    border-radius: 10px;
+    display: block;
+    margin-top: 5px;
+}
+
+@keyframes blink {
+
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+
+    30% {
+        opacity: 0.5;
+    }
+}

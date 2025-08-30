@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Game</title>
+    <link rel="stylesheet" href="../css/Fstyle.css">
+</head>
+
+<body>
+    <canvas id="stars-canvas"></canvas>
+
+    <div id="game-container">
+        <!-- Matter.js canvas will be created automatically -->
+        <canvas id="overlay-canvas"></canvas>
+    </div>
+
+    <!-- Preview outside the game container -->
+    <div id="preview-container">
+        <p id="preview-label">Current planet</p>
+        <canvas id="next-planet-preview"></canvas>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="../js/Fscr.js"></script>
+</body>
+
+</html>
