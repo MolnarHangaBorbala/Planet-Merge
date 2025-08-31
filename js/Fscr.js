@@ -19,23 +19,86 @@ for (let i = 0; i < starCount; i++) {
         y: Math.random() * starsCanvas.height,
         radius: Math.random() * 1.5 + 0.2,
         twinkleSpeed: Math.random() * 0.05 + 0.02,
-        twinkleOffset: Math.random() * Math.PI * 2
+        twinkleOffset: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: (Math.random() - 0.5) * 0.1
     });
 }
 
 function drawStars() {
     starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
     const time = Date.now() * 0.002;
+
     for (let s of stars) {
         const alpha = 0.5 + 0.5 * Math.sin(time * s.twinkleSpeed + s.twinkleOffset);
+
+        s.x += s.vx;
+        s.y += s.vy;
+
+        if (s.x < 0) s.x = starsCanvas.width;
+        if (s.x > starsCanvas.width) s.x = 0;
+        if (s.y < 0) s.y = starsCanvas.height;
+        if (s.y > starsCanvas.height) s.y = 0;
+
         starsCtx.beginPath();
         starsCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
         starsCtx.fillStyle = `rgba(255,255,255,${alpha})`;
         starsCtx.fill();
     }
+
     requestAnimationFrame(drawStars);
 }
 drawStars();
+
+// ------------------ PLANET SIZE BOX ------------------
+const sizeCanvas = document.getElementById("planet-size-canvas");
+const sizeCtx = sizeCanvas.getContext("2d");
+
+function drawPlanetSizeBox() {
+    const xPad = 12;
+    const yPad = 12;
+    const spacing = 10;
+
+    let totalHeight = yPad;
+    for (const stage of planetStages) {
+        const scale = 0.5;
+        totalHeight += stage.radius * 2 * scale + spacing;
+    }
+
+    const dpr = window.devicePixelRatio || 1;
+    sizeCanvas.width = sizeCanvas.clientWidth * dpr;
+    sizeCanvas.height = totalHeight * dpr;
+    sizeCtx.setTransform(dpr, 0, 0, dpr, 0, 0); // fix HiDPI
+
+    sizeCtx.clearRect(0, 0, sizeCanvas.width, sizeCanvas.height);
+
+    let y = yPad;
+
+    for (const stage of planetStages) {
+        const img = createPlanetImage(stage);
+        const scale = 0.5;
+        const w = stage.radius * 2 * scale;
+        const h = w;
+        const labelX = xPad + w + 8;
+        const targetY = y;
+
+        const paint = () => {
+            sizeCtx.drawImage(img, xPad, targetY, w, h);
+            sizeCtx.fillStyle = "white";
+            sizeCtx.font = "12px system-ui, Arial";
+            sizeCtx.textBaseline = "middle";
+            sizeCtx.fillText(`${stage.name} (${stage.points} pts)`, labelX, targetY + h / 2);
+        };
+
+        if (img.complete) paint();
+        else img.onload = paint;
+
+        y += h + spacing;
+    }
+}
+
+window.addEventListener("load", drawPlanetSizeBox);
+window.addEventListener("resize", drawPlanetSizeBox);
 
 // ------------------ ENGINE & RENDER ------------------
 const engine = Engine.create();
@@ -63,17 +126,17 @@ World.add(world, [
 
 // ------------------ PLANETS ------------------
 const planetStages = [
-    { radius: 20, color: "hsl(30,20%,60%)", type: "rock" },
-    { radius: 35, color: "hsl(0,0%,50%)", type: "rock" },
-    { radius: 50, color: "hsl(210,30%,60%)", type: "rock" },
-    { radius: 65, color: "hsl(220,50%,55%)", type: "rock" },
-    { radius: 80, color: "hsl(25,80%,50%)", type: "rock" },
-    { radius: 95, color: "hsl(200,70%,45%)", type: "earth" },
-    { radius: 115, color: "hsl(40,80%,55%)", type: "gas" },
-    { radius: 135, color: "hsl(45,100%,60%)", type: "saturn" },
-    { radius: 155, color: "hsl(15,80%,55%)", type: "star" },
-    { radius: 170, color: "hsl(280,70%,50%)", type: "star" },
-    { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole" }
+    { radius: 20, color: "hsl(30,20%,60%)", type: "rock", name: "Ceres", points: "10" },
+    { radius: 35, color: "hsl(0,0%,50%)", type: "rock", name: "Vesta", points: "20" },
+    { radius: 50, color: "hsl(210,30%,60%)", type: "rock", name: "Pallas", points: "40" },
+    { radius: 65, color: "hsl(220,50%,55%)", type: "rock", name: "Hygiea", points: "80" },
+    { radius: 80, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
+    { radius: 95, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
+    { radius: 115, color: "hsl(40,80%,55%)", type: "gas", name: "Jupiter", points: "640" },
+    { radius: 135, color: "hsl(45, 50%, 52%)", type: "saturn", name: "Saturn", points: "1,280" },
+    { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
+    { radius: 170, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
+    { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
 ];
 
 function createPlanetImage(planet) {
@@ -86,67 +149,106 @@ function createPlanetImage(planet) {
 
     switch (type) {
         case "rock":
-            ctx.fillStyle = color;
+            // shading
+            const gradRock = ctx.createRadialGradient(radius * 0.6, radius * 0.6, radius * 0.2, radius, radius, radius);
+            gradRock.addColorStop(0, color);
+            gradRock.addColorStop(1, "hsl(0,0%,15%)");
+            ctx.fillStyle = gradRock;
             ctx.beginPath();
             ctx.arc(radius, radius, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = "rgba(0,0,0,0.2)";
-            for (let i = 0; i < 5; i++) {
-                const r = Math.random() * radius * 0.2;
-                const x = radius + (Math.random() - 0.5) * radius * 1.5;
-                const y = radius + (Math.random() - 0.5) * radius * 1.5;
+            // craters
+            for (let i = 0; i < 6; i++) {
+                const r = Math.random() * radius * 0.15 + 2;
+                const x = radius + (Math.random() - 0.5) * radius * 1.4;
+                const y = radius + (Math.random() - 0.5) * radius * 1.4;
+
+                const craterGrad = ctx.createRadialGradient(x - r / 2, y - r / 2, r * 0.2, x, y, r);
+                craterGrad.addColorStop(0, "rgba(255,255,255,0.15)");
+                craterGrad.addColorStop(1, "rgba(0,0,0,0.4)");
+
+                ctx.fillStyle = craterGrad;
                 ctx.beginPath();
                 ctx.arc(x, y, r, 0, Math.PI * 2);
                 ctx.fill();
             }
             break;
+
         case "gas":
-            ctx.fillStyle = color;
+            const gradGas = ctx.createRadialGradient(radius * 0.8, radius * 0.8, radius * 0.2, radius, radius, radius);
+            gradGas.addColorStop(0, color);
+            gradGas.addColorStop(1, "hsl(210,30%,15%)");
+            ctx.fillStyle = gradGas;
             ctx.beginPath();
             ctx.arc(radius, radius, radius, 0, Math.PI * 2);
             ctx.fill();
-            const stripeCount = 6;
-            ctx.lineWidth = radius * 0.4;
-            for (let i = 0; i < stripeCount; i++) {
-                const stripeRadius = radius * 0.8 - i * radius * 0.1;
-                ctx.beginPath();
-                ctx.arc(radius, radius, stripeRadius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(255,255,255,${0.2 - i * 0.02})`;
-                ctx.stroke();
-            }
             break;
 
-        case "earth":
-            const gradientEarth = ctx.createRadialGradient(radius, radius, radius * 0.3, radius, radius, radius);
-            gradientEarth.addColorStop(0, "hsl(200, 80%, 60%)");
-            gradientEarth.addColorStop(1, "hsla(200, 62%, 26%, 1.0)");
+        case "earth": {
+            // --- Base ocean gradient ---
+            const gradientEarth = ctx.createRadialGradient(
+                radius * 0.6, radius * 0.6, radius * 0.3,
+                radius, radius, radius
+            );
+            gradientEarth.addColorStop(0, "hsl(200, 80%, 60%)");  // lighter ocean
+            gradientEarth.addColorStop(1, "hsl(200, 62%, 20%)");  // deep ocean
             ctx.fillStyle = gradientEarth;
             ctx.beginPath();
             ctx.arc(radius, radius, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = "hsl(120, 60%, 40%)";
-            for (let i = 0; i < 5; i++) {
-                const cx = radius + (Math.random() - 0.5) * radius * 1.2;
-                const cy = radius + (Math.random() - 0.5) * radius * 1.2;
-                const w = radius * (0.2 + Math.random() * 0.15);
-                const h = radius * (0.1 + Math.random() * 0.15);
+            // --- Landmasses ---
+            ctx.fillStyle = "hsl(120, 55%, 35%)";
+            for (let i = 0; i < 7; i++) {
+                const cx = radius + (Math.random() - 0.5) * radius * 1.4;
+                const cy = radius + (Math.random() - 0.5) * radius * 1.4;
                 ctx.beginPath();
-                ctx.ellipse(cx, cy, w, h, Math.random() * Math.PI, 0, Math.PI * 2);
+                ctx.ellipse(cx, cy, radius * 0.25, radius * 0.12, Math.random() * Math.PI, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            ctx.fillStyle = "rgba(255,255,255,0.2)";
-            for (let i = 0; i < 8; i++) {
-                const cx = radius + (Math.random() - 0.5) * radius * 1.2;
-                const cy = radius + (Math.random() - 0.5) * radius * 1.2;
-                const w = radius * 0.1 + Math.random() * 0.1 * radius;
-                const h = radius * 0.05 + Math.random() * 0.05 * radius;
+            // --- Clouds ---
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
+            for (let i = 0; i < 10; i++) {
+                const cx = radius + (Math.random() - 0.5) * radius * 1.3;
+                const cy = radius + (Math.random() - 0.5) * radius * 1.3;
                 ctx.beginPath();
-                ctx.ellipse(cx, cy, w, h, Math.random() * Math.PI, 0, Math.PI * 2);
+                ctx.ellipse(cx, cy, radius * (0.1 + Math.random() * 0.15), radius * (0.05 + Math.random() * 0.08), Math.random() * Math.PI, 0, Math.PI * 2);
                 ctx.fill();
             }
+
+            // --- Polar ice caps ---
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+            ctx.clip();
+
+            const iceGradNorth = ctx.createLinearGradient(0, 0, 0, radius);
+            iceGradNorth.addColorStop(0, "rgba(255,255,255,0.8)");
+            iceGradNorth.addColorStop(1, "transparent");
+            ctx.fillStyle = iceGradNorth;
+            ctx.fillRect(0, 0, radius * 2, radius);  // north half
+
+            const iceGradSouth = ctx.createLinearGradient(0, radius, 0, radius * 2);
+            iceGradSouth.addColorStop(0, "transparent");
+            iceGradSouth.addColorStop(1, "rgba(255,255,255,0.8)");
+            ctx.fillStyle = iceGradSouth;
+            ctx.fillRect(0, radius, radius * 2, radius);  // south half
+            ctx.restore();
+
+            // --- Atmosphere glow ---
+            const atmosphere = ctx.createRadialGradient(
+                radius, radius, radius * 0.95,
+                radius, radius, radius * 1.2
+            );
+            atmosphere.addColorStop(0, "rgba(0,180,255,0.25)");
+            atmosphere.addColorStop(1, "rgba(0,180,255,0)");
+            ctx.fillStyle = atmosphere;
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius * 1.2, 0, Math.PI * 2);
+            ctx.fill();
+        }
             break;
 
         case "saturn":
@@ -157,7 +259,7 @@ function createPlanetImage(planet) {
             const center = canvasSize / 2;
 
             const ringCount = 3;
-            const ringThickness = radius * 0.15;
+            const ringThickness = radius * 0.10;
             for (let i = 0; i < ringCount; i++) {
                 const innerR = radius * 1.2 + i * ringThickness * 1.1;
                 const outerR = innerR + ringThickness;
@@ -175,21 +277,54 @@ function createPlanetImage(planet) {
             }
 
             const gradientSaturn = ctx.createRadialGradient(center, center, radius * 0.2, center, center, radius);
-            gradientSaturn.addColorStop(0, "hsl(50, 25%, 75%)");
-            gradientSaturn.addColorStop(1, "hsl(40, 30%, 65%)");
+            gradientSaturn.addColorStop(0, color);
+            gradientSaturn.addColorStop(1, "hsla(0, 0%, 27%, 1.00)");
             ctx.fillStyle = gradientSaturn;
             ctx.beginPath();
             ctx.arc(center, center, radius, 0, Math.PI * 2);
             ctx.fill();
             break;
 
-        case "star":
-            ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 30;
+        case "star": {
+            const coreColor = color;
+            const outerColor = "rgba(255,255,255,0.05)";
+            const streakColor = "rgba(255,255,255,0.2)";
+
+            const grad = ctx.createRadialGradient(radius, radius, radius * 0.2, radius, radius, radius);
+            grad.addColorStop(0, "rgba(255,255,255,1)");
+            grad.addColorStop(0.2, coreColor);
+            grad.addColorStop(1, outerColor);
+            ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(radius, radius, radius, 0, Math.PI * 2);
             ctx.fill();
+
+            ctx.shadowColor = "rgba(255,255,255,0.1)";
+            ctx.shadowBlur = radius * 0.2;
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius * 0.95, 0, Math.PI * 2);
+            ctx.fill();
+
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i;
+                const len = radius * (0.8 + Math.random() * 0.3);
+                const x1 = radius + Math.cos(angle) * radius * 0.2;
+                const y1 = radius + Math.sin(angle) * radius * 0.2;
+                const x2 = radius + Math.cos(angle) * len;
+                const y2 = radius + Math.sin(angle) * len;
+
+                const streakGrad = ctx.createLinearGradient(x1, y1, x2, y2);
+                streakGrad.addColorStop(0, "rgba(255,255,255,0.5)");
+                streakGrad.addColorStop(1, "rgba(255,255,255,0)");
+
+                ctx.strokeStyle = streakGrad;
+                ctx.lineWidth = radius * 0.02;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+        }
             break;
 
         case "blackhole":
@@ -225,7 +360,7 @@ function spawnPlanet(x, stageIndex, y) {
     const stage = planetStages[stageIndex];
     const img = createPlanetImage(stage);
 
-    const planet = Bodies.circle(x, y, stage.radius, { // use passed y
+    const planet = Bodies.circle(x, y, stage.radius, {
         restitution: 0.3,
         friction: 0.05,
         frictionAir: 0.001,
@@ -247,11 +382,9 @@ let nextStageIndex = Math.floor(Math.random() * 5);
 const previewCanvas = document.getElementById("next-planet-preview");
 const previewCtx = previewCanvas.getContext("2d");
 
-// Fix canvas size to match CSS
 previewCanvas.width = previewCanvas.clientWidth;
 previewCanvas.height = previewCanvas.clientHeight;
 
-// Cache the preview image
 let previewImg = null;
 function updatePreviewImage() {
     const stage = planetStages[nextStageIndex];
@@ -273,7 +406,6 @@ function drawNextPlanetPreview() {
 }
 updatePreviewImage();
 
-// When the next planet changes, update the preview
 function setNextStageIndex(idx) {
     nextStageIndex = idx;
     updatePreviewImage();
@@ -307,6 +439,14 @@ render.canvas.addEventListener("mousedown", e => {
     setNextStageIndex(Math.floor(Math.random() * 5));
 });
 
+// ------------------ SCORE ------------------
+let score = 0;
+const scoreDisplay = document.getElementById("score");
+
+function updateScoreDisplay() {
+    scoreDisplay.textContent = score.toLocaleString() + "pts";
+}
+
 // ------------------ COLLISIONS ------------------
 Events.on(engine, "collisionStart", e => {
     e.pairs.forEach(pair => {
@@ -321,6 +461,8 @@ Events.on(engine, "collisionStart", e => {
                     planetStages[nextStage].radius,
                     {
                         restitution: 0.2,
+                        friction: 0.05,
+                        frictionAir: 0.001,
                         label: "planet",
                         render: {
                             sprite: {
@@ -333,6 +475,11 @@ Events.on(engine, "collisionStart", e => {
                 );
                 newPlanet.stage = nextStage;
                 World.add(world, newPlanet);
+
+                const points = parseInt(planetStages[nextStage].points.replace(/,/g, ""));
+                score += points;
+                updateScoreDisplay();
+
                 World.remove(world, bodyA);
                 World.remove(world, bodyB);
             }
@@ -401,3 +548,66 @@ container.addEventListener('mouseleave', () => mouseX = null);
     }
     requestAnimationFrame(drawOverlay);
 })();
+
+// ------------------ GAME OVER CHECK WITH TIMER (2sec) ------------------
+let planetTouchTimes = new Map();
+let gameOverTriggered = false;
+
+function checkGameOverWithTimer() {
+    if (gameOverTriggered) return;
+
+    const ufoY = 40, ufoH = 30;
+    const ufoW = 120;
+
+    const touchingPlanets = world.bodies.filter(p => {
+        if (p.label !== "planet") return false;
+        const dx = Math.abs(p.position.x - 300);
+        const dy = Math.abs(p.position.y - ufoY);
+        return dx < ufoW / 2 + p.circleRadius && dy < ufoH / 2 + p.circleRadius;
+    });
+
+    touchingPlanets.forEach(p => {
+        if (!planetTouchTimes.has(p)) {
+            planetTouchTimes.set(p, Date.now());
+        } else {
+            const elapsed = Date.now() - planetTouchTimes.get(p);
+            if (elapsed >= 2000) {
+                gameOverTriggered = true;
+                startAllPlanetsShake();
+            }
+        }
+    });
+
+    planetTouchTimes.forEach((_, p) => {
+        if (!touchingPlanets.includes(p)) planetTouchTimes.delete(p);
+    });
+}
+
+function startAllPlanetsShake() {
+    const planets = world.bodies.filter(b => b.label === "planet");
+    const start = Date.now();
+    const shakeDuration = 3000;
+
+    const shakeInterval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        if (elapsed > shakeDuration) {
+            planets.forEach(p => World.remove(world, p));
+            clearInterval(shakeInterval);
+            return;
+        }
+
+        planets.forEach(planet => {
+            Matter.Body.setVelocity(planet, { x: 0, y: 0 });
+            Matter.Body.setAngularVelocity(planet, 0);
+
+            const offsetX = (Math.random() - 0.5) * 10;
+            const offsetY = (Math.random() - 0.5) * 10;
+            Matter.Body.setPosition(planet, {
+                x: planet.position.x + offsetX,
+                y: planet.position.y + offsetY
+            });
+        });
+    }, 50);
+}
+
+Events.on(engine, "beforeUpdate", checkGameOverWithTimer);

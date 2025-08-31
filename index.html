@@ -4,14 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/Fstyle.css">
     <title>Document</title>
 </head>
 
 <body>
+    <canvas id="stars-canvas"></canvas>
 
-    <button onclick="window.location.href='html/Fgame.html'">game</button>
+    <div id="btn-div">
+        <button class="ui-btn" onclick="window.location.href='html/Fgame.html'">
+            <span> PLAY </span>
+        </button>
+    </div>
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="js/Fscr.js"></script>
 </body>
 
 </html>
