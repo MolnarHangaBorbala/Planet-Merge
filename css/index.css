@@ -7,6 +7,27 @@
 }
 
 /*----------------- BUTTON -----------------*/
+.ui-btn span {
+    animation: flicker 2s infinite;
+}
+
+@keyframes flicker {
+    0% {
+        color: rgb(101, 255, 255);
+        text-shadow: 0 0 10px rgb(101, 255, 255);
+    }
+
+    50% {
+        color: cyan;
+        text-shadow: 0 0 10px cyan;
+    }
+
+    100% {
+        color: rgb(101, 255, 255);
+        text-shadow: 0 0 10px rgb(101, 255, 255);
+    }
+}
+
 .ui-btn {
     --btn-default-bg: radial-gradient(circle at 30% 30%, #0a0a1f, #000015 80%);
     --btn-padding: 15px 40px;
@@ -54,8 +75,13 @@
 
 /* Subtle space drift */
 @keyframes starsMove {
-    from { background-position: 0 0; }
-    to { background-position: 1000px 1000px; }
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 1000px 1000px;
+    }
 }
 
 .ui-btn span {
@@ -78,7 +104,7 @@
     background: var(--btn-hover-bg);
     border-color: #00ffee;
     box-shadow: 0 0 35px rgba(0, 255, 255, 0.6),
-                inset 0 0 25px rgba(0, 255, 255, 0.25);
+        inset 0 0 25px rgba(0, 255, 255, 0.25);
 }
 
 .ui-btn:hover span,
