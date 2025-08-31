@@ -416,27 +416,25 @@ let lastClickTime = 0;
 const cooldown = 750;
 
 render.canvas.addEventListener("mousedown", e => {
-    const now = Date.now();
-    if (now - lastClickTime < cooldown) return;
-    lastClickTime = now;
+    render.canvas.addEventListener("mousedown", e => {
+        const now = Date.now();
+        if (now - lastClickTime < cooldown) return;
+        lastClickTime = now;
 
-    const rect = render.canvas.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    const stageIndex = nextStageIndex;
-    const stage = planetStages[stageIndex];
-    x = Math.max(stage.radius + 10, Math.min(x, 600 - 10 - stage.radius));
+        const rect = render.canvas.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        const stageIndex = nextStageIndex;
+        const stage = planetStages[stageIndex];
+        x = Math.max(stage.radius + 10, Math.min(x, 600 - 10 - stage.radius));
 
-    const ufoY = 40, ufoH = 30;
-    const beamH = 100;
-    const topY = ufoY + ufoH / 2;
-    const botY = topY + beamH;
+        const lineY = 40 + 30 / 2 + 15;
 
-    const scale = 0.8;
-    const spawnY = botY - stage.radius * scale;
+        const spawnY = lineY + stage.radius + 15;
 
-    World.add(world, spawnPlanet(x, stageIndex, spawnY));
+        World.add(world, spawnPlanet(x, stageIndex, spawnY));
 
-    setNextStageIndex(Math.floor(Math.random() * 5));
+        setNextStageIndex(Math.floor(Math.random() * 5));
+    });
 });
 
 // ------------------ SCORE ------------------
@@ -520,22 +518,60 @@ container.addEventListener('mouseleave', () => mouseX = null);
         overlayCtx.lineTo(mouseX, overlayCanvas.height);
         overlayCtx.stroke();
 
-        // --- UFO ---
+        // --- UFO realistic look ---
         const ufoY = 40, ufoW = 120, ufoH = 40;
-        overlayCtx.fillStyle = "rgba(160,160,160,1)";
+
+        // metallic body (ellipse with gradient)
+        let bodyGrad = overlayCtx.createLinearGradient(mouseX - ufoW / 2, ufoY, mouseX + ufoW / 2, ufoY);
+        bodyGrad.addColorStop(0, "#222");   // dark steel
+        bodyGrad.addColorStop(0.5, "#888"); // highlight
+        bodyGrad.addColorStop(1, "#222");   // dark steel
+        overlayCtx.fillStyle = bodyGrad;
         overlayCtx.beginPath();
         overlayCtx.ellipse(mouseX, ufoY, ufoW / 2, ufoH / 2, 0, 0, Math.PI * 2);
         overlayCtx.fill();
 
-        overlayCtx.fillStyle = "rgba(100,201,255,0.83)";
+        // subtle rim shading
+        overlayCtx.strokeStyle = "rgba(255,255,255,0.2)";
+        overlayCtx.lineWidth = 2;
+        overlayCtx.stroke();
+
+        // dome (glass canopy with reflection)
+        let domeGrad = overlayCtx.createRadialGradient(mouseX, ufoY - 10, 5, mouseX, ufoY - 10, ufoH / 1.2);
+        domeGrad.addColorStop(0, "rgba(200, 230, 255, 0.8)");  // inner bright
+        domeGrad.addColorStop(1, "rgba(100, 140, 180, 0.3)"); // outer fade
+        overlayCtx.fillStyle = domeGrad;
         overlayCtx.beginPath();
         overlayCtx.arc(mouseX, ufoY - 5, ufoH / 2, Math.PI, 0, false);
         overlayCtx.fill();
 
-        // --- Tractor beam ---
-        const beamTopW = 20, beamBotW = 50, beamH = 100;
+        // dome reflection streak
+        overlayCtx.strokeStyle = "rgba(255,255,255,0.6)";
+        overlayCtx.lineWidth = 1.5;
+        overlayCtx.beginPath();
+        overlayCtx.arc(mouseX - 10, ufoY - 12, 12, Math.PI * 0.8, Math.PI * 1.3);
+        overlayCtx.stroke();
+
+        // glowing rim lights (subtle, white-blue)
+        for (let i = -2; i <= 2; i++) {
+            let lightGrad = overlayCtx.createRadialGradient(mouseX + i * 20, ufoY + ufoH / 4, 2, mouseX + i * 20, ufoY + ufoH / 4, 6);
+            lightGrad.addColorStop(0, "rgba(180,220,255,0.9)");
+            lightGrad.addColorStop(1, "rgba(180,220,255,0)");
+            overlayCtx.fillStyle = lightGrad;
+            overlayCtx.beginPath();
+            overlayCtx.arc(mouseX + i * 20, ufoY + ufoH / 4, 6, 0, Math.PI * 2);
+            overlayCtx.fill();
+        }
+
+        // --- Tractor beam (more realistic) ---
+        const beamTopW = 20, beamBotW = 80, beamH = 90;
         const topY = ufoY + ufoH / 2, botY = topY + beamH;
-        overlayCtx.fillStyle = "rgba(0,255,0,0.15)";
+
+        let beamGrad = overlayCtx.createLinearGradient(mouseX, topY, mouseX, botY);
+        beamGrad.addColorStop(0, "rgba(0, 255, 180, 0.25)");
+        beamGrad.addColorStop(1, "rgba(0, 120, 255, 0.05)");
+
+        overlayCtx.fillStyle = beamGrad;
         overlayCtx.beginPath();
         overlayCtx.moveTo(mouseX - beamTopW / 2, topY);
         overlayCtx.lineTo(mouseX + beamTopW / 2, topY);
@@ -546,68 +582,82 @@ container.addEventListener('mouseleave', () => mouseX = null);
 
         overlayCtx.restore();
     }
+
+    // --- Fixed dotted line under UFO ---
+    const lineY = 40 + 30 / 2 + 15;
+    overlayCtx.setLineDash([5, 5]);
+    overlayCtx.strokeStyle = "rgba(255, 0, 0, 0.4)";
+    overlayCtx.lineWidth = 4;
+    overlayCtx.beginPath();
+    overlayCtx.moveTo(0, lineY);
+    overlayCtx.lineTo(overlayCanvas.width, lineY);
+    overlayCtx.stroke();
+    overlayCtx.setLineDash([]);
+
     requestAnimationFrame(drawOverlay);
 })();
 
-// ------------------ GAME OVER CHECK WITH TIMER (2sec) ------------------
-let planetTouchTimes = new Map();
+
+// ------------------ GAME OVER CHECK ------------------
 let gameOverTriggered = false;
 
-function checkGameOverWithTimer() {
+function checkGameOver() {
     if (gameOverTriggered) return;
 
-    const ufoY = 40, ufoH = 30;
-    const ufoW = 120;
+    const lineY = 40 + 30 / 2 + 15;
 
-    const touchingPlanets = world.bodies.filter(p => {
-        if (p.label !== "planet") return false;
-        const dx = Math.abs(p.position.x - 300);
-        const dy = Math.abs(p.position.y - ufoY);
-        return dx < ufoW / 2 + p.circleRadius && dy < ufoH / 2 + p.circleRadius;
-    });
+    const touchingPlanets = world.bodies.filter(p =>
+        p.label === "planet" && Math.abs(p.position.y - lineY) < p.circleRadius
+    );
 
-    touchingPlanets.forEach(p => {
-        if (!planetTouchTimes.has(p)) {
-            planetTouchTimes.set(p, Date.now());
-        } else {
-            const elapsed = Date.now() - planetTouchTimes.get(p);
-            if (elapsed >= 2000) {
-                gameOverTriggered = true;
-                startAllPlanetsShake();
-            }
-        }
-    });
+    if (touchingPlanets.length > 0) {
+        gameOverTriggered = true;
+        startAllPlanetsShake();
+    }
+}
 
-    planetTouchTimes.forEach((_, p) => {
-        if (!touchingPlanets.includes(p)) planetTouchTimes.delete(p);
-    });
+Events.on(engine, "beforeUpdate", () => {
+    checkGameOver();
+});
+
+function resetGameOver() {
+    gameOverTriggered = false;
 }
 
 function startAllPlanetsShake() {
     const planets = world.bodies.filter(b => b.label === "planet");
+    const originalPositions = planets.map(p => ({ x: p.position.x, y: p.position.y }));
     const start = Date.now();
     const shakeDuration = 3000;
 
     const shakeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
         if (elapsed > shakeDuration) {
-            planets.forEach(p => World.remove(world, p));
+            planets.forEach((planet) => {
+                const stage = planetStages[planet.stage];
+                const points = parseInt(stage.points.replace(/,/g, ""));
+                score += points;
+                World.remove(world, planet);
+            });
+            updateScoreDisplay();
+
+            score = 0;
+            updateScoreDisplay();
+
             clearInterval(shakeInterval);
             return;
         }
 
-        planets.forEach(planet => {
+        planets.forEach((planet, index) => {
             Matter.Body.setVelocity(planet, { x: 0, y: 0 });
             Matter.Body.setAngularVelocity(planet, 0);
 
             const offsetX = (Math.random() - 0.5) * 10;
             const offsetY = (Math.random() - 0.5) * 10;
             Matter.Body.setPosition(planet, {
-                x: planet.position.x + offsetX,
-                y: planet.position.y + offsetY
+                x: originalPositions[index].x + offsetX,
+                y: originalPositions[index].y + offsetY
             });
         });
     }, 50);
 }
-
-Events.on(engine, "beforeUpdate", checkGameOverWithTimer);
