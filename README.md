@@ -36,7 +36,7 @@
 ## 🗂️ Project Structure
 
 ```
-[`index.html`](index.html )
+[`index.html`](index.html)
 [`README.md`](README.md )
 css/
   [`css/Fstyle.css`](css/Fstyle.css )
