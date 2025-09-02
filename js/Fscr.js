@@ -240,7 +240,7 @@ function createPlanetImage(planet) {
             // --- Atmosphere glow ---
             const atmosphere = ctx.createRadialGradient(
                 radius, radius, radius * 0.95,
-                radius, radius, radius * 1.2
+                radius, radius, radius * 1.1
             );
             atmosphere.addColorStop(0, "rgba(0,180,255,0.25)");
             atmosphere.addColorStop(1, "rgba(0,180,255,0)");
@@ -660,4 +660,5 @@ function startAllPlanetsShake() {
             });
         });
     }, 50);
+
 }
