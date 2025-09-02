@@ -436,6 +436,8 @@ render.canvas.addEventListener("mousedown", e => {
     World.add(world, spawnPlanet(x, stageIndex, spawnY));
 
     setNextStageIndex(Math.floor(Math.random() * 5));
+
+    checkGameOver();
 });
 
 // ------------------ SCORE ------------------
