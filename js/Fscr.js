@@ -1,6 +1,7 @@
 const { Engine, Render, Runner, World, Bodies, Events } = Matter;
 
 // ------------------ STAR BACKGROUND ------------------
+// Handles animated star field in the background
 const starsCanvas = document.getElementById('stars-canvas');
 const starsCtx = starsCanvas.getContext('2d');
 
@@ -11,6 +12,7 @@ function resizeStars() {
 resizeStars();
 window.addEventListener('resize', resizeStars);
 
+// Generate random stars with twinkle and movement
 const starCount = 200;
 const stars = [];
 for (let i = 0; i < starCount; i++) {
@@ -51,6 +53,7 @@ function drawStars() {
 drawStars();
 
 // ------------------ PLANET SIZE BOX ------------------
+// Draws the planet progression list on the left
 const sizeCanvas = document.getElementById("planet-size-canvas");
 const sizeCtx = sizeCanvas.getContext("2d");
 
@@ -139,6 +142,7 @@ const planetStages = [
     { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
 ];
 
+// Creates a planet image for rendering, based on its type
 function createPlanetImage(planet) {
     const { radius, color, type } = planet;
     let canvasSize = radius * 2;
@@ -416,25 +420,22 @@ let lastClickTime = 0;
 const cooldown = 750;
 
 render.canvas.addEventListener("mousedown", e => {
-    render.canvas.addEventListener("mousedown", e => {
-        const now = Date.now();
-        if (now - lastClickTime < cooldown) return;
-        lastClickTime = now;
+    const now = Date.now();
+    if (now - lastClickTime < cooldown) return;
+    lastClickTime = now;
 
-        const rect = render.canvas.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        const stageIndex = nextStageIndex;
-        const stage = planetStages[stageIndex];
-        x = Math.max(stage.radius + 10, Math.min(x, 600 - 10 - stage.radius));
+    const rect = render.canvas.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    const stageIndex = nextStageIndex;
+    const stage = planetStages[stageIndex];
+    x = Math.max(stage.radius + 10, Math.min(x, 600 - 10 - stage.radius));
 
-        const lineY = 40 + 30 / 2 + 15;
+    const lineY = 40 + 30 / 2 + 15;
+    const spawnY = lineY + stage.radius + 15;
 
-        const spawnY = lineY + stage.radius + 15;
+    World.add(world, spawnPlanet(x, stageIndex, spawnY));
 
-        World.add(world, spawnPlanet(x, stageIndex, spawnY));
-
-        setNextStageIndex(Math.floor(Math.random() * 5));
-    });
+    setNextStageIndex(Math.floor(Math.random() * 5));
 });
 
 // ------------------ SCORE ------------------
@@ -449,6 +450,19 @@ function updateScoreDisplay() {
 Events.on(engine, "collisionStart", e => {
     e.pairs.forEach(pair => {
         const { bodyA, bodyB } = pair;
+        // Blackhole collision feature
+        if (
+            bodyA.label === "planet" && bodyB.label === "planet" &&
+            bodyA.stage === planetStages.length - 1 &&
+            bodyB.stage === planetStages.length - 1
+        ) {
+            // Both are blackholes, remove all planets
+            const planets = world.bodies.filter(b => b.label === "planet");
+            planets.forEach(p => World.remove(world, p));
+            return; // Don't merge blackholes
+        }
+
+        // Normal merge logic
         if (bodyA.label === "planet" && bodyB.label === "planet") {
             if (bodyA.stage === bodyB.stage && bodyA.stage < planetStages.length - 1) {
                 const nextStage = bodyA.stage + 1;
@@ -563,7 +577,7 @@ container.addEventListener('mouseleave', () => mouseX = null);
             overlayCtx.fill();
         }
 
-        // --- Tractor beam (more realistic) ---
+        // --- Tractor beam ---
         const beamTopW = 20, beamBotW = 80, beamH = 90;
         const topY = ufoY + ufoH / 2, botY = topY + beamH;
 
@@ -597,7 +611,6 @@ container.addEventListener('mouseleave', () => mouseX = null);
     requestAnimationFrame(drawOverlay);
 })();
 
-
 // ------------------ GAME OVER CHECK ------------------
 let gameOverTriggered = false;
 
@@ -607,7 +620,7 @@ function checkGameOver() {
     const lineY = 40 + 30 / 2 + 15;
 
     const touchingPlanets = world.bodies.filter(p =>
-        p.label === "planet" && Math.abs(p.position.y - lineY) < p.circleRadius
+        p.label === "planet" && Math.abs(p.position.y - lineY) < p.circleRadius + 30
     );
 
     if (touchingPlanets.length > 0) {
@@ -624,6 +637,7 @@ function resetGameOver() {
     gameOverTriggered = false;
 }
 
+// Shakes all planets, then clears them and resets score
 function startAllPlanetsShake() {
     const planets = world.bodies.filter(b => b.label === "planet");
     const originalPositions = planets.map(p => ({ x: p.position.x, y: p.position.y }));
@@ -660,5 +674,4 @@ function startAllPlanetsShake() {
             });
         });
     }, 50);
-
 }
