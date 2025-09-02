@@ -35,19 +35,19 @@
 
 ## 🗂️ Project Structure
 
-```
-[`index.html`](index.html)
-[`README.md`](README.md )
-css/
-  [`css/Fstyle.css`](css/Fstyle.css )
-  [`css/index.css`](css/index.css )
-html/
-  [`html/Fgame.html`](html/Fgame.html )
-img/
-  icons8-planet-32.png
-js/
-  [`js/Fscr.js`](js/Fscr.js )
-```
+
+   [`index.html`](index.html)
+   [`README.md`](README.md )
+   css/
+     [`css/Fstyle.css`](css/Fstyle.css )
+     [`css/index.css`](css/index.css )
+   html/
+     [`html/Fgame.html`](html/Fgame.html )
+   img/
+     icons8-planet-32.png
+   js/
+     [`js/Fscr.js`](js/Fscr.js )
+
 
 - **Core Game Logic:** [`js/Fscr.js`](js/Fscr.js)
 - **Main UI:** [`index.html`](index.html), [`html/Fgame.html`](html/Fgame.html)
@@ -67,10 +67,8 @@ js/
 
 ## 🪐 Roadmap
 
-- Multiplayer cosmic battles
 - Planet skins & upgrades
-- Leaderboards powered by quantum AI
-- NFT planet trading (coming 2040 🚀)
+- ~~Leaderboards powered by quantum AI~~
 
 ---
 
