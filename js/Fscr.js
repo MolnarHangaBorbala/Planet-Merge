@@ -619,8 +619,11 @@ function checkGameOver() {
 
     const lineY = 40 + 30 / 2 + 15;
 
+    const hitboxHeight = 60;
     const touchingPlanets = world.bodies.filter(p =>
-        p.label === "planet" && Math.abs(p.position.y - lineY) < p.circleRadius + 30
+        p.label === "planet" &&
+        p.position.y >= (lineY - hitboxHeight) &&
+        p.position.y <= lineY
     );
 
     if (touchingPlanets.length > 0) {
