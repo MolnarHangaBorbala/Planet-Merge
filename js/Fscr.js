@@ -1,5 +1,300 @@
 const { Engine, Render, Runner, World, Bodies, Events } = Matter;
 
+// remember toggle in localStorage
+let useRealisticPhysics = localStorage.getItem("useRealisticPhysics") === "true";
+
+const physicText = document.getElementById("physicT");
+function updatePhysicsText() {
+    physicText.textContent = useRealisticPhysics ? "Realistic" : "Arcade";
+}
+
+document.getElementById("toggle-physics").addEventListener("click", () => {
+    useRealisticPhysics = !useRealisticPhysics;
+    localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
+
+    alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
+
+    updatePhysicsText();
+
+    initPhysics();
+});
+updatePhysicsText();
+
+// ------------------ PLANETS ------------------
+const planetStages = [
+    { radius: 20, color: "hsl(30,20%,60%)", type: "rock", name: "Ceres", points: "10" },
+    { radius: 35, color: "hsl(0,0%,50%)", type: "rock", name: "Vesta", points: "20" },
+    { radius: 50, color: "hsl(210,30%,60%)", type: "rock", name: "Pallas", points: "40" },
+    { radius: 65, color: "hsl(220,50%,55%)", type: "rock", name: "Hygiea", points: "80" },
+    { radius: 80, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
+    { radius: 95, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
+    { radius: 115, color: "hsl(40,80%,55%)", type: "gas", name: "Jupiter", points: "640" },
+    { radius: 135, color: "hsl(45, 50%, 52%)", type: "saturn", name: "Saturn", points: "1,280" },
+    { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
+    { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
+];
+
+// ------------------ SCORE ------------------
+let score = 0;
+const scoreDisplay = document.getElementById("score");
+function updateScoreDisplay() {
+    scoreDisplay.textContent = score.toLocaleString() + "pts";
+}
+window.updateScoreDisplay = updateScoreDisplay;
+
+// ------------------ ENGINE & RENDER ------------------
+let engine, world, render;
+let runner = null;
+let collisionHandler = null;
+let beforeUpdateHandler = null;
+let spawnHandler = null;
+
+function handleSpawn(e) {
+    const now = Date.now();
+    if (now - lastClickTime < cooldown) return;
+    lastClickTime = now;
+
+    const rect = render.canvas.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    const stageIndex = nextStageIndex;
+    const stage = planetStages[stageIndex];
+    x = Math.max(stage.radius + 10, Math.min(x, 600 - 10 - stage.radius));
+
+    const lineY = 40 + 30 / 2 + 15;
+    const spawnY = lineY + stage.radius + 15;
+
+    World.add(world, spawnPlanet(x, stageIndex, spawnY));
+
+    setNextStageIndex(Math.floor(Math.random() * 5));
+    checkGameOver();
+}
+
+function applyGravityPull(source, bodies, strength) {
+    if (!source || !bodies) return;
+
+    for (let other of bodies) {
+        if (!other || other === source) continue;
+
+        const dx = source.position.x - other.position.x;
+        const dy = source.position.y - other.position.y;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < 1) continue;
+
+        const force = Math.min(strength / distSq, 0.0008); 
+        Matter.Body.applyForce(other, other.position, {
+            x: dx * force,
+            y: dy * force
+        });
+    }
+}
+
+function absorbNearbyPlanets(blackhole, planets) {
+    if (!blackhole || !planets) return;
+
+    for (let p of planets) {
+        if (!p || p === blackhole) continue;
+
+        const dx = blackhole.position.x - p.position.x;
+        const dy = blackhole.position.y - p.position.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < blackhole.circleRadius + p.circleRadius) {
+            // safely remove planet
+            World.remove(world, p);
+        }
+    }
+}
+
+function initPhysics() {
+    if (engine) {
+        try { if (runner) Runner.stop(runner); } catch (err) { }
+        try { Render.stop(render); } catch (err) { }
+
+        try {
+            if (render && render.canvas && spawnHandler) {
+                render.canvas.removeEventListener("mousedown", spawnHandler);
+            }
+        } catch (err) { }
+
+        try {
+            if (engine && collisionHandler) Events.off(engine, "collisionStart", collisionHandler);
+            if (engine && beforeUpdateHandler) Events.off(engine, "beforeUpdate", beforeUpdateHandler);
+        } catch (err) { }
+
+        try { World.clear(world, false); } catch (err) { }
+        try { Engine.clear(engine); } catch (err) { }
+
+        try { if (render && render.canvas && render.canvas.parentNode) render.canvas.parentNode.removeChild(render.canvas); } catch (err) { }
+    }
+
+    engine = Engine.create();
+    world = engine.world;
+
+    if (useRealisticPhysics && typeof enableRealisticPhysics === "function") {
+        enableRealisticPhysics(engine, world, planetStages, updateScoreDisplay, function (pts) {
+            score += pts;
+            updateScoreDisplay();
+        });
+    }
+
+    render = Render.create({
+        element: document.getElementById("game-container"),
+        engine: engine,
+        options: { width: 600, height: 800, wireframes: false, background: "rgba(255,255,255,0.05)" }
+    });
+
+    runner = Runner.create();
+    Render.run(render);
+    Runner.run(runner, engine);
+
+    World.add(world, [
+        Bodies.rectangle(300, 810, 800, 20, { isStatic: true }),
+        Bodies.rectangle(-10, 400, 20, 1000, { isStatic: true }),
+        Bodies.rectangle(610, 400, 20, 1000, { isStatic: true })
+    ]);
+
+    // --- collisions ---
+    collisionHandler = function (e) {
+        e.pairs.forEach(pair => {
+            const { bodyA, bodyB } = pair;
+
+            if (bodyA.label === "planet" && bodyB.label === "planet") {
+
+                // Special: merge two Rigels into blackhole
+                if (bodyA.stage === 9 && bodyB.stage === 9) {
+                    const stageData = planetStages[10];
+                    const img = createPlanetImage(stageData);
+
+                    const blackhole = Bodies.circle(
+                        (bodyA.position.x + bodyB.position.x) / 2,
+                        (bodyA.position.y + bodyB.position.y) / 2,
+                        stageData.radius,
+                        {
+                            restitution: 0,
+                            friction: 1,
+                            frictionAir: 0,
+                            label: "planet",
+                            render: { sprite: { texture: img.src, xScale: 1, yScale: 1 } }
+                        }
+                    );
+                    blackhole.stage = 10;
+                    blackhole.specialEffect = "blackhole";
+
+                    World.add(world, blackhole);
+
+                    // Remove the two Rigels
+                    World.remove(world, bodyA);
+                    World.remove(world, bodyB);
+
+                    // --- Freeze all planets and shake ---
+                    const planets = world.bodies.filter(p => p.label === "planet");
+                    const originalPositions = planets.map(p => ({ x: p.position.x, y: p.position.y }));
+                    const start = Date.now();
+                    const shakeDuration = 3000;
+
+                    const shakeInterval = setInterval(() => {
+                        const elapsed = Date.now() - start;
+                        if (elapsed > shakeDuration) {
+                            planets.forEach(p => {
+                                World.remove(world, p); // disappear
+                            });
+                            clearInterval(shakeInterval);
+                            return;
+                        }
+
+                        planets.forEach((planet, index) => {
+                            Matter.Body.setVelocity(planet, { x: 0, y: 0 });
+                            Matter.Body.setAngularVelocity(planet, 0);
+
+                            const offsetX = (Math.random() - 0.5) * 10;
+                            const offsetY = (Math.random() - 0.5) * 10;
+                            Matter.Body.setPosition(planet, {
+                                x: originalPositions[index].x + offsetX,
+                                y: originalPositions[index].y + offsetY
+                            });
+                        });
+                    }, 50);
+
+                    return; // skip normal merge logic
+                }
+
+                // Normal merge logic
+                if (bodyA.stage === bodyB.stage && bodyA.stage < planetStages.length - 1) {
+                    const nextStage = bodyA.stage + 1;
+                    const stageData = planetStages[nextStage];
+                    const img = createPlanetImage(stageData);
+
+                    const newPlanet = Bodies.circle(
+                        (bodyA.position.x + bodyB.position.x) / 2,
+                        (bodyA.position.y + bodyB.position.y) / 2,
+                        stageData.radius,
+                        {
+                            restitution: 0.2,
+                            friction: 0.05,
+                            frictionAir: 0.001,
+                            label: "planet",
+                            render: { sprite: { texture: img.src, xScale: 1, yScale: 1 } }
+                        }
+                    );
+                    newPlanet.stage = nextStage;
+
+                    // Assign special effects
+                    if (stageData.type === "blackhole") {
+                        newPlanet.specialEffect = "blackhole";
+                    }
+
+                    World.add(world, newPlanet);
+
+                    const points = parseInt(stageData.points.replace(/,/g, ""));
+                    score += points;
+                    updateScoreDisplay();
+
+                    World.remove(world, bodyA);
+                    World.remove(world, bodyB);
+                }
+            }
+        });
+    };
+
+
+    Events.on(engine, "collisionStart", collisionHandler);
+
+    // --- beforeUpdate (game over check) ---
+    beforeUpdateHandler = () => {
+        checkGameOver();
+
+        const planets = world.bodies.filter(b => b.label === "planet");
+        for (let p of planets) {
+            if (!p) continue;
+
+            switch (p.specialEffect) {
+                case "weakGravity":
+                    applyGravityPull(p, planets, 0.00002);
+                    break;
+                case "repelRing":
+                    applyGravityPull(p, planets, -0.00005);
+                    break;
+                case "strongGravity":
+                    applyGravityPull(p, planets, 0.0001);
+                    break;
+                case "blackhole":
+                    applyGravityPull(p, planets, 0.0005);
+                    absorbNearbyPlanets(p, planets);
+                    break;
+            }
+        }
+    };
+
+    Events.on(engine, "beforeUpdate", beforeUpdateHandler);
+
+    // --- spawn handler: attach to current render.canvas ---
+    spawnHandler = handleSpawn;
+    render.canvas.addEventListener("mousedown", spawnHandler);
+}
+initPhysics();
+
+
 // ------------------ STAR BACKGROUND ------------------
 // Handles animated star field in the background
 const starsCanvas = document.getElementById('stars-canvas');
@@ -102,45 +397,6 @@ function drawPlanetSizeBox() {
 
 window.addEventListener("load", drawPlanetSizeBox);
 window.addEventListener("resize", drawPlanetSizeBox);
-
-// ------------------ ENGINE & RENDER ------------------
-const engine = Engine.create();
-const world = engine.world;
-
-const render = Render.create({
-    element: document.getElementById("game-container"),
-    engine: engine,
-    options: {
-        width: 600,
-        height: 800,
-        wireframes: false,
-        background: "rgba(255, 255, 255, 0.05)"
-    }
-});
-Render.run(render);
-Runner.run(Runner.create(), engine);
-
-// ------------------ WALLS ------------------
-World.add(world, [
-    Bodies.rectangle(300, 810, 800, 20, { isStatic: true }),
-    Bodies.rectangle(-10, 400, 20, 1000, { isStatic: true }),
-    Bodies.rectangle(610, 400, 20, 1000, { isStatic: true })
-]);
-
-// ------------------ PLANETS ------------------
-const planetStages = [
-    { radius: 20, color: "hsl(30,20%,60%)", type: "rock", name: "Ceres", points: "10" },
-    { radius: 35, color: "hsl(0,0%,50%)", type: "rock", name: "Vesta", points: "20" },
-    { radius: 50, color: "hsl(210,30%,60%)", type: "rock", name: "Pallas", points: "40" },
-    { radius: 65, color: "hsl(220,50%,55%)", type: "rock", name: "Hygiea", points: "80" },
-    { radius: 80, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
-    { radius: 95, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
-    { radius: 115, color: "hsl(40,80%,55%)", type: "gas", name: "Jupiter", points: "640" },
-    { radius: 135, color: "hsl(45, 50%, 52%)", type: "saturn", name: "Saturn", points: "1,280" },
-    { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
-    { radius: 170, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
-    { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
-];
 
 // Creates a planet image for rendering, based on its type
 function createPlanetImage(planet) {
@@ -359,26 +615,112 @@ function createPlanetImage(planet) {
     img.src = canvas.toDataURL();
     return img;
 }
+//---------------------------------------------------
 
-function spawnPlanet(x, stageIndex, y) {
-    const stage = planetStages[stageIndex];
+function createRealisticPlanet(stageIndex, x, y, stages) {
+    const stage = stages[stageIndex];
     const img = createPlanetImage(stage);
 
+    // --- Base physics scaling ---
+    const baseDensity = 0.00002; // tweak for balance
+    let density = baseDensity * Math.pow(stage.radius, 2);
+    let restitution = 0.15;       // slightly bouncier for natural motion
+    let friction = 0.05;
+    let frictionAir = 0.002;
+
+    let specialEffect = null;
+
+    switch (stage.type) {
+        case "rock":
+            restitution = 0.25;
+            friction = 0.2;
+            break;
+
+        case "earth":
+            friction = 0.25;        // simulates atmosphere drag
+            frictionAir = 0.003;
+            break;
+
+        case "gas":
+            density *= 1.2;         // slightly heavier than rock
+            restitution = 0.1;
+            frictionAir = 0.004;
+            specialEffect = "weakGravity";  // gentle attraction
+            break;
+
+        case "saturn":
+            density *= 1.4;
+            restitution = 0.12;
+            frictionAir = 0.003;
+            specialEffect = "repelRing";    // pushes nearby planets
+            break;
+
+        case "star":
+            density *= 2.5;          // very massive
+            restitution = 0.05;
+            frictionAir = 0.005;
+            specialEffect = "strongGravity"; // pulls strongly
+            break;
+
+        case "blackhole":
+            density *= 15;           // extreme mass
+            restitution = 0;
+            friction = 1;
+            frictionAir = 0;
+            specialEffect = "blackhole";    // consumes nearby planets
+            break;
+    }
+
     const planet = Bodies.circle(x, y, stage.radius, {
-        restitution: 0.3,
-        friction: 0.05,
-        frictionAir: 0.001,
+        density,
+        restitution,
+        friction,
+        frictionAir,
+        inertia: Infinity,             // prevents spinning too fast
         label: "planet",
         render: {
-            sprite: {
-                texture: img.src,
-                xScale: 1,
-                yScale: 1
-            }
+            sprite: { texture: img.src, xScale: 1, yScale: 1 }
         }
     });
+
     planet.stage = stageIndex;
+    planet.specialEffect = specialEffect;
+
+    // --- subtle initial push for more natural motion ---
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 0.5 + Math.random() * 0.5; 
+    Matter.Body.setVelocity(planet, {
+        x: Math.cos(angle) * speed,
+        y: Math.sin(angle) * speed
+    });
+
+    // --- small spin for realism ---
+    const spin = (Math.random() - 0.5) * 0.02;
+    Matter.Body.setAngularVelocity(planet, spin);
+
     return planet;
+}
+
+
+//---------------------------------------------------
+
+function spawnPlanet(x, stageIndex, y) {
+    if (useRealisticPhysics) {
+        return createRealisticPlanet(stageIndex, x, y, planetStages);
+    } else {
+        // your original arcade planet spawn
+        const stage = planetStages[stageIndex];
+        const img = createPlanetImage(stage);
+        const planet = Bodies.circle(x, y, stage.radius, {
+            restitution: 0.3,
+            friction: 0.05,
+            frictionAir: 0.001,
+            label: "planet",
+            render: { sprite: { texture: img.src, xScale: 1, yScale: 1 } }
+        });
+        planet.stage = stageIndex;
+        return planet;
+    }
 }
 
 // ------------------ PREVIEW OUTSIDE ------------------
@@ -440,66 +782,6 @@ render.canvas.addEventListener("mousedown", e => {
     checkGameOver();
 });
 
-// ------------------ SCORE ------------------
-let score = 0;
-const scoreDisplay = document.getElementById("score");
-
-function updateScoreDisplay() {
-    scoreDisplay.textContent = score.toLocaleString() + "pts";
-}
-
-// ------------------ COLLISIONS ------------------
-Events.on(engine, "collisionStart", e => {
-    e.pairs.forEach(pair => {
-        const { bodyA, bodyB } = pair;
-        // Blackhole collision feature
-        if (
-            bodyA.label === "planet" && bodyB.label === "planet" &&
-            bodyA.stage === planetStages.length - 1 &&
-            bodyB.stage === planetStages.length - 1
-        ) {
-            // Both are blackholes, remove all planets
-            const planets = world.bodies.filter(b => b.label === "planet");
-            planets.forEach(p => World.remove(world, p));
-            return; // Don't merge blackholes
-        }
-
-        // Normal merge logic
-        if (bodyA.label === "planet" && bodyB.label === "planet") {
-            if (bodyA.stage === bodyB.stage && bodyA.stage < planetStages.length - 1) {
-                const nextStage = bodyA.stage + 1;
-                const img = createPlanetImage(planetStages[nextStage]);
-                const newPlanet = Bodies.circle(
-                    (bodyA.position.x + bodyB.position.x) / 2,
-                    (bodyA.position.y + bodyB.position.y) / 2,
-                    planetStages[nextStage].radius,
-                    {
-                        restitution: 0.2,
-                        friction: 0.05,
-                        frictionAir: 0.001,
-                        label: "planet",
-                        render: {
-                            sprite: {
-                                texture: img.src,
-                                xScale: 1,
-                                yScale: 1
-                            }
-                        }
-                    }
-                );
-                newPlanet.stage = nextStage;
-                World.add(world, newPlanet);
-
-                const points = parseInt(planetStages[nextStage].points.replace(/,/g, ""));
-                score += points;
-                updateScoreDisplay();
-
-                World.remove(world, bodyA);
-                World.remove(world, bodyB);
-            }
-        }
-    });
-});
 
 // ------------------ OVERLAY UFO ------------------
 const overlayCanvas = document.getElementById('overlay-canvas');
