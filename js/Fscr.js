@@ -31,6 +31,7 @@ const planetStages = [
     { radius: 115, color: "hsl(40,80%,55%)", type: "gas", name: "Jupiter", points: "640" },
     { radius: 135, color: "hsl(45, 50%, 52%)", type: "saturn", name: "Saturn", points: "1,280" },
     { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
+    { radius: 170, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
     { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
 ];
 
