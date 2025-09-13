@@ -991,56 +991,179 @@ function startAllPlanetsShake() {
 
 window.addEventListener("load", updateLeaderboardDisplay);
 
-// -------------------- LEADERBOARD ----------------------
-function saveScoreToLeaderboard(score) {
+// -------------------- FIREBASE LEADERBOARD (Claude)----------------------
+
+// Global leaderboard functions
+async function saveScoreToLeaderboard(score) {
+    if (!isFirebaseInitialized) {
+        console.log('Firebase not available, using local storage');
+        saveScoreToLocalLeaderboard(score);
+        return;
+    }
+
+    try {
+        const name = prompt("Enter your name:", "Player") || "Player";
+
+        // Show submitting status
+        const header = document.querySelector('#leaderboard-div h3');
+        if (header) header.textContent = 'Submitting Score...';
+
+        // Create score object
+        const scoreData = {
+            name: name.substring(0, 20), // Limit name length
+            score: score,
+            largestPlanet: largestPlanetReached,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // Push to Firebase
+        await database.ref('leaderboard').push(scoreData);
+
+        console.log('Score submitted successfully to global leaderboard!');
+
+        // Refresh leaderboard to show new score
+        setTimeout(() => updateLeaderboardDisplay(), 1000);
+
+    } catch (error) {
+        console.error('Error submitting score to Firebase:', error);
+        alert('Failed to submit score to global leaderboard. Saving locally.');
+        saveScoreToLocalLeaderboard(score);
+    } finally {
+        largestPlanetReached = 0;
+    }
+}
+
+// Fallback to local storage
+function saveScoreToLocalLeaderboard(score) {
     let leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
 
     const name = prompt("Enter your name:", "Player") || "Player";
 
-    leaderboard.push({ 
-        name, 
+    leaderboard.push({
+        name: name + " (Local)",
         score,
-        largestPlanet: largestPlanetReached 
+        largestPlanet: largestPlanetReached,
+        timestamp: Date.now()
     });
 
     leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 15);
-
     localStorage.setItem("planetLeaderboard", JSON.stringify(leaderboard));
-    updateLeaderboardDisplay();
-    
+    displayLeaderboard(leaderboard, true);
     largestPlanetReached = 0;
 }
 
-const tooltip = document.createElement('div');
-tooltip.className = 'leaderboard-tooltip';
-document.body.appendChild(tooltip);
+// Update leaderboard display
+async function updateLeaderboardDisplay() {
+    if (!isFirebaseInitialized) {
+        const localLeaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+        displayLeaderboard(localLeaderboard, true);
+        return;
+    }
 
-function updateLeaderboardDisplay() {
-    const leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+    try {
+        showLeaderboardLoading('Loading global leaderboard...');
+
+        // Get top 100 scores, ordered by score descending
+        const snapshot = await database.ref('leaderboard')
+            .orderByChild('score')
+            .limitToLast(100)
+            .once('value');
+
+        const data = snapshot.val();
+
+        if (!data) {
+            displayLeaderboard([]);
+            return;
+        }
+
+        // Convert to array and sort by score (highest first)
+        const leaderboard = Object.values(data)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 15); // Show top 15
+
+        displayLeaderboard(leaderboard);
+
+    } catch (error) {
+        console.error('Error fetching leaderboard from Firebase:', error);
+
+        // Fallback to local
+        const localLeaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+        displayLeaderboard(localLeaderboard, true);
+    }
+}
+
+function showLeaderboardLoading(message) {
     const list = document.getElementById("LB-list");
+    const header = document.querySelector('#leaderboard-div h3');
+
+    list.innerHTML = `<li style="text-align: center; color: #888; font-style: italic;">${message}</li>`;
+    if (header) header.textContent = 'Loading...';
+}
+
+function displayLeaderboard(leaderboard, isLocal = false) {
+    const list = document.getElementById("LB-list");
+    const header = document.querySelector('#leaderboard-div h3');
+
     list.innerHTML = "";
+
+    // Update header
+    if (header) {
+        header.textContent = isLocal ? 'Leaderboard (Local)' : 'Global Leaderboard';
+        header.style.color = isLocal ? '#ff6b6b' : 'aliceblue';
+    }
+
+    if (leaderboard.length === 0) {
+        list.innerHTML = '<li style="text-align: center; color: #888; font-style: italic;">No scores yet! Be the first!</li>';
+        return;
+    }
 
     leaderboard.forEach((entry, idx) => {
         const li = document.createElement("li");
-        li.textContent = `${entry.name} — ${entry.score.toLocaleString()} pts`;
-        
+
+        const displayName = entry.name || 'Anonymous';
+        li.textContent = `${displayName} — ${entry.score.toLocaleString()} pts`;
+
+        // Add tooltip functionality (keep existing code)
         li.addEventListener('mouseenter', (e) => {
             const largestPlanetIndex = entry.largestPlanet || 0;
-            const planetName = planetStages[largestPlanetIndex].name;
-            
-            tooltip.innerHTML = `<div>Largest Planet: <strong>${planetName}</strong></div>`;
-            
+            const planetName = planetStages[largestPlanetIndex]?.name || 'Unknown';
+
+            let dateStr = '';
+            if (entry.timestamp) {
+                const date = new Date(entry.timestamp);
+                dateStr = `<div style="font-size: 12px; color: #aaa;">Date: ${date.toLocaleDateString()}</div>`;
+            }
+
+            tooltip.innerHTML = `
+                <div>Largest Planet: <strong>${planetName}</strong></div>
+                ${dateStr}
+            `;
+
             tooltip.classList.add('show');
-            
+
             const rect = li.getBoundingClientRect();
             tooltip.style.left = (rect.right + 10) + 'px';
             tooltip.style.top = (rect.top + rect.height / 2 - tooltip.offsetHeight / 2) + 'px';
         });
-        
+
         li.addEventListener('mouseleave', () => {
             tooltip.classList.remove('show');
         });
-        
+
         list.appendChild(li);
     });
 }
+
+// Auto-refresh every 30 seconds (only if Firebase is working)
+setInterval(() => {
+    if (isFirebaseInitialized) {
+        updateLeaderboardDisplay();
+    }
+}, 30000);
+
+// Initialize when page loads
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        updateLeaderboardDisplay();
+    }, 2000); // Wait 2 seconds to ensure Firebase is loaded
+});
