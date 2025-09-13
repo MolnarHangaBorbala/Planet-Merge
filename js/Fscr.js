@@ -1192,7 +1192,6 @@ window.addEventListener("load", () => {
     }, 2000); // Wait 2 seconds to ensure Firebase is loaded
 });
 
-// 
 // Function for testing/development only (clear leaderboard)
 async function clearLeaderboard() {
     if (!isFirebaseInitialized) {
@@ -1208,3 +1207,42 @@ async function clearLeaderboard() {
         console.error('Error clearing leaderboard:', error);
     }
 }
+
+/* Full Screen--------------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+    const elementsConfig = {
+        "body-div": { default: "30px", fullscreen: "100px" },
+        "preview-container": { default: "30px", fullscreen: "100px" },
+        "leaderboard-div": { default: "425px", fullscreen: "540px" },
+        "score-div": { default: "350px", fullscreen: "450px" },
+        "planet-size-box": { default: "20px", fullscreen: "100px" },
+        "game-container": {default: "0px", fullscreen: "70px"}
+    };
+
+    const elements = {};
+    Object.keys(elementsConfig).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) elements[id] = el;
+    });
+
+    function isF11Fullscreen() {
+        return window.innerHeight === screen.height || window.outerHeight === screen.height;
+    }
+
+    function adjustTop() {
+        Object.entries(elementsConfig).forEach(([id, config]) => {
+            const el = elements[id];
+            if (!el) return;
+
+            if (isF11Fullscreen()) {
+                el.style.top = config.fullscreen;
+            } else {
+                el.style.top = config.default;
+            }
+        });
+    }
+
+    adjustTop();
+
+    window.addEventListener("resize", adjustTop);
+});
