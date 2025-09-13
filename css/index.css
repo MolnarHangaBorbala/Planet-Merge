@@ -52,7 +52,6 @@
     font: var(--font-weight) var(--font-size) var(--font-family);
     background: var(--btn-default-bg);
     border: 2px solid rgba(0, 255, 200, 0.3);
-    cursor: pointer;
     transition: var(--btn-transition);
     overflow: hidden;
     box-shadow: var(--btn-shadow);
@@ -116,4 +115,8 @@
 .ui-btn:hover span::before,
 .ui-btn:focus span::before {
     animation: chitchat linear both var(--btn-animation-duration);
+}
+
+.ui-btn:hover {
+    cursor: url("../img/cur/tile_0097.png"), auto;
 }
