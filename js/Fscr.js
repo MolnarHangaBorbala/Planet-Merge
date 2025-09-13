@@ -1,5 +1,16 @@
 const { Engine, Render, Runner, World, Bodies, Events } = Matter;
 
+// ------------------ INPUT LOCK ------------------
+let inputLocked = false;
+
+// ------------------ TRACK LARGEST PLANET ------------------
+let largestPlanetReached = 0;
+function updateLargestPlanet(stageIndex) {
+    if (stageIndex > largestPlanetReached) {
+        largestPlanetReached = stageIndex;
+    }
+}
+
 // ------------------ AUDIO ------------------
 const mergeSound = document.getElementById("merge-sfx");
 const gameOverSound = document.getElementById("game-over-sfx");
@@ -26,7 +37,7 @@ function playGOSFX() {
     try {
         if (!playGOSFX.played) {
             playGOSFX.played = true;
-            gameOverSound.volume = 0.6;
+            gameOverSound.volume = 0.5;
             gameOverSound.currentTime = 0;
             gameOverSound.play();
         }
@@ -108,6 +119,8 @@ let beforeUpdateHandler = null;
 let spawnHandler = null;
 
 function handleSpawn(e) {
+    if (inputLocked) return;
+
     const now = Date.now();
     if (now - lastClickTime < cooldown) return;
     lastClickTime = now;
@@ -238,6 +251,7 @@ function initPhysics() {
                     );
                     blackhole.stage = 10;
                     blackhole.specialEffect = "blackhole";
+                    updateLargestPlanet(10);
 
                     World.add(world, blackhole);
                     playMSFX();
@@ -297,6 +311,7 @@ function initPhysics() {
                         }
                     );
                     newPlanet.stage = nextStage;
+                    updateLargestPlanet(nextStage);
 
 
                     // Assign special effects
@@ -712,6 +727,7 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
 //---------------------------------------------------
 
 function spawnPlanet(x, stageIndex, y) {
+    updateLargestPlanet(stageIndex);
     if (useRealisticPhysics) {
         return createRealisticPlanet(stageIndex, x, y, planetStages);
     } else {
@@ -770,6 +786,8 @@ let lastClickTime = 0;
 const cooldown = 750;
 
 render.canvas.addEventListener("mousedown", e => {
+    if (inputLocked) return;
+
     const now = Date.now();
     if (now - lastClickTime < cooldown) return;
     lastClickTime = now;
@@ -930,10 +948,12 @@ Events.on(engine, "beforeUpdate", () => {
 function resetGameOver() {
     gameOverTriggered = false;
     resetGOSFX();
+    inputLocked = false;
 }
 
 // Shakes all planets, then clears them and resets score
 function startAllPlanetsShake() {
+    inputLocked = true;
     const planets = world.bodies.filter(b => b.label === "planet");
     const originalPositions = planets.map(p => ({ x: p.position.x, y: p.position.y }));
     const start = Date.now();
@@ -942,18 +962,16 @@ function startAllPlanetsShake() {
     const shakeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
         if (elapsed > shakeDuration) {
-            planets.forEach((planet) => {
-                const stage = planetStages[planet.stage];
-                const points = parseInt(stage.points.replace(/,/g, ""));
-                score += points;
-                World.remove(world, planet);
-            });
-            updateScoreDisplay();
+            planets.forEach((planet) => World.remove(world, planet));
+
+            saveScoreToLeaderboard(score);
 
             score = 0;
+            displayedScore = 0;
             updateScoreDisplay();
 
             clearInterval(shakeInterval);
+            resetGameOver();
             return;
         }
 
@@ -969,4 +987,60 @@ function startAllPlanetsShake() {
             });
         });
     }, 50);
+}
+
+window.addEventListener("load", updateLeaderboardDisplay);
+
+// -------------------- LEADERBOARD ----------------------
+function saveScoreToLeaderboard(score) {
+    let leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+
+    const name = prompt("Enter your name:", "Player") || "Player";
+
+    leaderboard.push({ 
+        name, 
+        score,
+        largestPlanet: largestPlanetReached 
+    });
+
+    leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 15);
+
+    localStorage.setItem("planetLeaderboard", JSON.stringify(leaderboard));
+    updateLeaderboardDisplay();
+    
+    largestPlanetReached = 0;
+}
+
+const tooltip = document.createElement('div');
+tooltip.className = 'leaderboard-tooltip';
+document.body.appendChild(tooltip);
+
+function updateLeaderboardDisplay() {
+    const leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+    const list = document.getElementById("LB-list");
+    list.innerHTML = "";
+
+    leaderboard.forEach((entry, idx) => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.name} — ${entry.score.toLocaleString()} pts`;
+        
+        li.addEventListener('mouseenter', (e) => {
+            const largestPlanetIndex = entry.largestPlanet || 0;
+            const planetName = planetStages[largestPlanetIndex].name;
+            
+            tooltip.innerHTML = `<div>Largest Planet: <strong>${planetName}</strong></div>`;
+            
+            tooltip.classList.add('show');
+            
+            const rect = li.getBoundingClientRect();
+            tooltip.style.left = (rect.right + 10) + 'px';
+            tooltip.style.top = (rect.top + rect.height / 2 - tooltip.offsetHeight / 2) + 'px';
+        });
+        
+        li.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('show');
+        });
+        
+        list.appendChild(li);
+    });
 }

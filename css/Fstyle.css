@@ -53,7 +53,10 @@ body {
     text-align: left;
     width: 160px;
     color: white;
-    font-family: sans-serif;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 10;
 }
 
 #preview-label {
@@ -61,13 +64,6 @@ body {
     font-size: 20px;
     font-weight: bold;
     font-family: monospace;
-}
-
-#preview-container {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    z-index: 10;
 }
 
 #game-container #preview-container {
@@ -194,4 +190,94 @@ body {
 #physicT:hover,
 #toggle-physics:hover {
     color: beige;
+}
+
+/* Leaderboard */
+#leaderboard-div {
+    position: absolute;
+    left: 20px;
+    top: 425px;
+    height: 300px;
+    width: 320px;
+    background: rgba(255, 255, 255, 0.068);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+    z-index: 1000;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#leaderboard-div h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: monospace;
+    color: aliceblue;
+    padding: 5px;
+    border-radius: 6px 6px 0px 0px;
+    background: rgb(0, 0, 0);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    transform: translateY(10px) translateX(10px);
+}
+
+#LB-inner-div {
+    position: absolute;
+    height: 270px;
+    width: 307px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 0px 0px 6px 6px;
+}
+
+#LB-list li {
+    color: rgba(206, 206, 206, 0.856);
+    font-family: monospace;
+    font-size: 20px;
+    border-bottom: 1px solid gray;
+    padding: 5px 0px 10px 15px;
+}
+
+#LB-list li:nth-of-type(odd) {
+    background: rgba(56, 56, 56, 0.2);
+}
+
+#LB-list li:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+    cursor: url("../img/cur/tile_0097.png"), auto;
+    border-radius: 0px 0px 10px 10px;
+    color: rgb(255, 255, 255);
+}
+
+.leaderboard-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: monospace;
+    pointer-events: none;
+    z-index: 9999;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.leaderboard-tooltip.show {
+    opacity: 1;
+}
+
+#LBtext-div {
+    background-color: rgb(0, 0, 0);
+    height: 40px;
+    top: 0;
+    width: 325px;
+    transform: translateY(-10px) translateX(-10px);
+    position: sticky;
+    z-index: 10;
 }
