@@ -1211,12 +1211,12 @@ async function clearLeaderboard() {
 /* Full Screen--------------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
     const elementsConfig = {
-        "body-div": { default: "30px", fullscreen: "100px" },
-        "preview-container": { default: "30px", fullscreen: "100px" },
-        "leaderboard-div": { default: "425px", fullscreen: "540px" },
-        "score-div": { default: "350px", fullscreen: "450px" },
-        "planet-size-box": { default: "20px", fullscreen: "100px" },
-        "game-container": {default: "0px", fullscreen: "70px"}
+        "body-div": { default: "30px", fullscreen: "90px" },
+        "preview-container": { default: "30px", fullscreen: "90px" },
+        "leaderboard-div": { default: "425px", fullscreen: "530px" },
+        "score-div": { default: "350px", fullscreen: "440px" },
+        "planet-size-box": { default: "20px", fullscreen: "90px" },
+        "game-container": {default: "0px", fullscreen: "60px"}
     };
 
     const elements = {};
