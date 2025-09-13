@@ -1191,3 +1191,20 @@ window.addEventListener("load", () => {
         updateLeaderboardDisplay();
     }, 2000); // Wait 2 seconds to ensure Firebase is loaded
 });
+
+// 
+// Function for testing/development only (clear leaderboard)
+async function clearLeaderboard() {
+    if (!isFirebaseInitialized) {
+        console.log('Firebase not initialized');
+        return;
+    }
+    
+    try {
+        await database.ref('leaderboard').remove();
+        console.log('Leaderboard cleared successfully');
+        updateLeaderboardDisplay();
+    } catch (error) {
+        console.error('Error clearing leaderboard:', error);
+    }
+}
