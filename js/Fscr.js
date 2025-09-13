@@ -1,5 +1,13 @@
 const { Engine, Render, Runner, World, Bodies, Events } = Matter;
 
+// ------------------ CURSOR ------------------
+const cursor = document.querySelector(".custom-cursor");
+document.addEventListener("mousemove", (e) => {
+    cursor.style.top = e.clientY + "px";
+    cursor.style.left = e.clientX + "px";
+});
+// ------------------------------------
+
 // remember toggle in localStorage
 let useRealisticPhysics = localStorage.getItem("useRealisticPhysics") === "true";
 
@@ -20,6 +28,39 @@ document.getElementById("toggle-physics").addEventListener("click", () => {
 });
 updatePhysicsText();
 
+// ------------------ AUDIO ------------------
+const mergeSound = document.getElementById("merge-sfx");
+const gameOverSound = document.getElementById("game-over-sfx");
+const spawnSound = document.getElementById("spawn-sfx")
+
+function playMSFX() {
+    try {
+
+        mergeSound.currentTime = 0;
+        mergeSound.play();
+    } catch (e) { }
+}
+
+function playGOSFX() {
+    try {
+        if (!playGOSFX.played) {
+            playGOSFX.played = true;
+            gameOverSound.volume = 0.6;
+            gameOverSound.currentTime = 0;
+            gameOverSound.play();
+        }
+    } catch (e) { }
+}
+function resetGOSFX() { playGOSFX.played = false; }
+
+function playSSFX() {
+    try {
+        spawnSound.volume = 0.2;
+        spawnSound.currentTime = 0;
+        spawnSound.play();
+    } catch (e) { }
+}
+
 // ------------------ PLANETS ------------------
 const planetStages = [
     { radius: 20, color: "hsl(30,20%,60%)", type: "rock", name: "Ceres", points: "10" },
@@ -28,8 +69,8 @@ const planetStages = [
     { radius: 65, color: "hsl(220,50%,55%)", type: "rock", name: "Hygiea", points: "80" },
     { radius: 80, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
     { radius: 95, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
-    { radius: 115, color: "hsl(40,80%,55%)", type: "gas", name: "Jupiter", points: "640" },
-    { radius: 135, color: "hsl(45, 50%, 52%)", type: "saturn", name: "Saturn", points: "1,280" },
+    { radius: 115, color: "hsla(40, 64%, 45%, 1.00)", type: "gas", name: "Jupiter", points: "640" },
+    { radius: 135, color: "hsla(45, 36%, 55%, 1.00)", type: "saturn", name: "Saturn", points: "1,280" },
     { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
     { radius: 170, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
     { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
@@ -82,7 +123,7 @@ function applyGravityPull(source, bodies, strength) {
 
         if (distSq < 1) continue;
 
-        const force = Math.min(strength / distSq, 0.0008); 
+        const force = Math.min(strength / distSq, 0.0008);
         Matter.Body.applyForce(other, other.position, {
             x: dx * force,
             y: dy * force
@@ -183,6 +224,7 @@ function initPhysics() {
                     blackhole.specialEffect = "blackhole";
 
                     World.add(world, blackhole);
+                    playMSFX();
 
                     // Remove the two Rigels
                     World.remove(world, bodyA);
@@ -240,6 +282,7 @@ function initPhysics() {
                     );
                     newPlanet.stage = nextStage;
 
+
                     // Assign special effects
                     if (stageData.type === "blackhole") {
                         newPlanet.specialEffect = "blackhole";
@@ -250,6 +293,7 @@ function initPhysics() {
                     const points = parseInt(stageData.points.replace(/,/g, ""));
                     score += points;
                     updateScoreDisplay();
+                    playMSFX();
 
                     World.remove(world, bodyA);
                     World.remove(world, bodyB);
@@ -289,64 +333,10 @@ function initPhysics() {
 
     Events.on(engine, "beforeUpdate", beforeUpdateHandler);
 
-    // --- spawn handler: attach to current render.canvas ---
     spawnHandler = handleSpawn;
     render.canvas.addEventListener("mousedown", spawnHandler);
 }
 initPhysics();
-
-
-// ------------------ STAR BACKGROUND ------------------
-// Handles animated star field in the background
-const starsCanvas = document.getElementById('stars-canvas');
-const starsCtx = starsCanvas.getContext('2d');
-
-function resizeStars() {
-    starsCanvas.width = window.innerWidth;
-    starsCanvas.height = window.innerHeight;
-}
-resizeStars();
-window.addEventListener('resize', resizeStars);
-
-// Generate random stars with twinkle and movement
-const starCount = 200;
-const stars = [];
-for (let i = 0; i < starCount; i++) {
-    stars.push({
-        x: Math.random() * starsCanvas.width,
-        y: Math.random() * starsCanvas.height,
-        radius: Math.random() * 1.5 + 0.2,
-        twinkleSpeed: Math.random() * 0.05 + 0.02,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        vx: (Math.random() - 0.5) * 0.1,
-        vy: (Math.random() - 0.5) * 0.1
-    });
-}
-
-function drawStars() {
-    starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
-    const time = Date.now() * 0.002;
-
-    for (let s of stars) {
-        const alpha = 0.5 + 0.5 * Math.sin(time * s.twinkleSpeed + s.twinkleOffset);
-
-        s.x += s.vx;
-        s.y += s.vy;
-
-        if (s.x < 0) s.x = starsCanvas.width;
-        if (s.x > starsCanvas.width) s.x = 0;
-        if (s.y < 0) s.y = starsCanvas.height;
-        if (s.y > starsCanvas.height) s.y = 0;
-
-        starsCtx.beginPath();
-        starsCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-        starsCtx.fillStyle = `rgba(255,255,255,${alpha})`;
-        starsCtx.fill();
-    }
-
-    requestAnimationFrame(drawStars);
-}
-drawStars();
 
 // ------------------ PLANET SIZE BOX ------------------
 // Draws the planet progression list on the left
@@ -689,7 +679,7 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
 
     // --- subtle initial push for more natural motion ---
     const angle = Math.random() * Math.PI * 2;
-    const speed = 0.5 + Math.random() * 0.5; 
+    const speed = 0.5 + Math.random() * 0.5;
     Matter.Body.setVelocity(planet, {
         x: Math.cos(angle) * speed,
         y: Math.sin(angle) * speed
@@ -720,6 +710,7 @@ function spawnPlanet(x, stageIndex, y) {
             render: { sprite: { texture: img.src, xScale: 1, yScale: 1 } }
         });
         planet.stage = stageIndex;
+        playSSFX();
         return planet;
     }
 }
@@ -913,8 +904,10 @@ function checkGameOver() {
 
     if (touchingPlanets.length > 0) {
         gameOverTriggered = true;
+        playGOSFX();
         startAllPlanetsShake();
     }
+
 }
 
 Events.on(engine, "beforeUpdate", () => {
@@ -923,6 +916,7 @@ Events.on(engine, "beforeUpdate", () => {
 
 function resetGameOver() {
     gameOverTriggered = false;
+    resetGOSFX();
 }
 
 // Shakes all planets, then clears them and resets score

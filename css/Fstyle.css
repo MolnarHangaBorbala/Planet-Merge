@@ -1,3 +1,8 @@
+html {
+    cursor: url("../img/cur/tile_0086.png"), auto;
+    user-select: none;
+}
+
 html,
 body {
     height: 100%;
@@ -25,6 +30,7 @@ body {
     height: 800px;
     margin: 30px auto 0 auto;
     z-index: 1;
+    cursor: none;
 }
 
 /* OVERLAY CANVAS */
@@ -154,6 +160,7 @@ body {
 /* Thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
     background-color: #555;
+    cursor: url("../img/cur/tile_0097.png"), auto;
 }
 
 /* Toggle BTN */
@@ -167,8 +174,10 @@ body {
     color: rgba(245, 245, 220, 0.74);
     font-family: monospace;
     padding: 7px;
+    cursor: url("../img/cur/tile_0097.png"), auto;
 }
 
-#physicT:hover, #toggle-physics:hover {
+#physicT:hover,
+#toggle-physics:hover {
     color: beige;
 }

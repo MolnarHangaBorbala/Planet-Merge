@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <div class="custom-cursor"></div>
     <canvas id="stars-canvas"></canvas>
 
     <div id="planet-size-box">
@@ -30,9 +31,14 @@
         <canvas id="next-planet-preview"></canvas>
         <button id="toggle-physics"><span id="physicT"></span></button>
     </div>
+    
+    <audio id="game-over-sfx" src="../sfx/game-over.mp3" preload="auto"></audio>
+    <audio id="merge-sfx" src="../sfx/merge.mp3" preload="auto"></audio>
+    <audio id="spawn-sfx" src="../sfx/spawn.mp3" preload="auto"></audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <script src="../js/Fscr.js"></script>
+    <script src="../js/stars.js"></script>
 </body>
 
 </html>
