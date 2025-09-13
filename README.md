@@ -15,7 +15,7 @@
 - **Progression System**: Evolve from asteroids to stars and blackholes.
 - **UFO Overlay**: Futuristic tractor beam guides your next move.
 - **Modes**: Switch between Arcade/Realistic mode.
-- ~~**Responsive UI**: Optimized for desktop and mobile browsers.~~
+- **Leaderboard**: Global leaderboard with [Firebase](https://firebase.google.com/) database.
 
 ---
 
