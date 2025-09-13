@@ -16,6 +16,7 @@ function playCSFX() {
 
 function playMSFX() {
     try {
+        mergeSound.volume = 0.5;
         mergeSound.currentTime = 0;
         mergeSound.play();
     } catch (e) { }
@@ -84,9 +85,18 @@ const planetStages = [
 
 // ------------------ SCORE ------------------
 let score = 0;
+let displayedScore = 0;
 const scoreDisplay = document.getElementById("score");
+
 function updateScoreDisplay() {
-    scoreDisplay.textContent = score.toLocaleString() + "pts";
+    if (displayedScore !== score) {
+        displayedScore += Math.round((score - displayedScore) * 0.03);
+        if (Math.abs(score - displayedScore) < 2) displayedScore = score;
+    }
+    scoreDisplay.textContent = displayedScore.toLocaleString() + "pts";
+    if (displayedScore !== score) {
+        requestAnimationFrame(updateScoreDisplay);
+    }
 }
 window.updateScoreDisplay = updateScoreDisplay;
 

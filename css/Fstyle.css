@@ -48,8 +48,10 @@ body {
 #preview-container {
     position: absolute;
     top: 30px;
-    right: 30px;
-    text-align: center;
+    left: calc(50% + 300px + 30px);
+    z-index: 10;
+    text-align: left;
+    width: 160px;
     color: white;
     font-family: sans-serif;
 }
@@ -59,6 +61,18 @@ body {
     font-size: 20px;
     font-weight: bold;
     font-family: monospace;
+}
+
+#preview-container {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 10;
+}
+
+#game-container #preview-container {
+    right: 30px;
+    top: 30px;
 }
 
 #next-planet-preview {
