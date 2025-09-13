@@ -1002,11 +1002,11 @@ async function saveScoreToLeaderboard(score) {
 
     try {
         const name = prompt("Enter your name:", "Player") || "Player";
-        
+
         // Show submitting status
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
-        
+
         // Create score object
         const scoreData = {
             name: name.substring(0, 20), // Limit name length
@@ -1017,12 +1017,12 @@ async function saveScoreToLeaderboard(score) {
 
         // Push to Firebase
         await database.ref('leaderboard').push(scoreData);
-        
+
         console.log('Score submitted successfully to global leaderboard!');
-        
+
         // Refresh leaderboard to show new score
         setTimeout(() => updateLeaderboardDisplay(), 1000);
-        
+
     } catch (error) {
         console.error('Error submitting score to Firebase:', error);
         alert('Failed to submit score to global leaderboard. Saving locally.');
@@ -1035,16 +1035,16 @@ async function saveScoreToLeaderboard(score) {
 // Fallback to local storage
 function saveScoreToLocalLeaderboard(score) {
     let leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
-    
+
     const name = prompt("Enter your name:", "Player") || "Player";
-    
-    leaderboard.push({ 
-        name: name + " (Local)", 
+
+    leaderboard.push({
+        name: name + " (Local)",
         score,
         largestPlanet: largestPlanetReached,
         timestamp: Date.now()
     });
-    
+
     leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 15);
     localStorage.setItem("planetLeaderboard", JSON.stringify(leaderboard));
     displayLeaderboard(leaderboard, true);
@@ -1061,30 +1061,30 @@ async function updateLeaderboardDisplay() {
 
     try {
         showLeaderboardLoading('Loading global leaderboard...');
-        
+
         // Get top 100 scores, ordered by score descending
         const snapshot = await database.ref('leaderboard')
             .orderByChild('score')
             .limitToLast(100)
             .once('value');
-        
+
         const data = snapshot.val();
-        
+
         if (!data) {
             displayLeaderboard([]);
             return;
         }
-        
+
         // Convert to array and sort by score (highest first)
         const leaderboard = Object.values(data)
             .sort((a, b) => b.score - a.score)
             .slice(0, 15); // Show top 15
-        
+
         displayLeaderboard(leaderboard);
-        
+
     } catch (error) {
         console.error('Error fetching leaderboard from Firebase:', error);
-        
+
         // Fallback to local
         const localLeaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
         displayLeaderboard(localLeaderboard, true);
@@ -1094,7 +1094,7 @@ async function updateLeaderboardDisplay() {
 function showLeaderboardLoading(message) {
     const list = document.getElementById("LB-list");
     const header = document.querySelector('#leaderboard-div h3');
-    
+
     list.innerHTML = `<li style="text-align: center; color: #888; font-style: italic;">${message}</li>`;
     if (header) header.textContent = 'Loading...';
 }
@@ -1102,20 +1102,20 @@ function showLeaderboardLoading(message) {
 function displayLeaderboard(leaderboard, isLocal = false) {
     const list = document.getElementById("LB-list");
     const header = document.querySelector('#leaderboard-div h3');
-    
+
     list.innerHTML = "";
-    
+
     // Update header
     if (header) {
         header.textContent = isLocal ? 'Leaderboard (Local)' : 'Global Leaderboard';
         header.style.color = isLocal ? '#ff6b6b' : 'aliceblue';
     }
-    
+
     if (leaderboard.length === 0) {
         list.innerHTML = '<li style="text-align: center; color: #888; font-style: italic;">No scores yet! Be the first!</li>';
         return;
     }
-    
+
     // Ensure tooltip exists (create if it doesn't)
     let tooltip = document.querySelector('.leaderboard-tooltip');
     if (!tooltip) {
@@ -1123,38 +1123,38 @@ function displayLeaderboard(leaderboard, isLocal = false) {
         tooltip.className = 'leaderboard-tooltip';
         document.body.appendChild(tooltip);
     }
-    
+
     leaderboard.forEach((entry, idx) => {
         const li = document.createElement("li");
-        
+
         const displayName = entry.name || 'Anonymous';
         li.textContent = `${displayName} — ${entry.score.toLocaleString()} pts`;
-        
+
         // Add tooltip functionality
         li.addEventListener('mouseenter', (e) => {
             const largestPlanetIndex = entry.largestPlanet || 0;
             const planetName = planetStages[largestPlanetIndex]?.name || 'Unknown';
-            
+
             let dateStr = '';
             if (entry.timestamp) {
                 const date = new Date(entry.timestamp);
                 dateStr = `<div style="font-size: 12px; color: #aaa; margin-top: 4px;">Date: ${date.toLocaleDateString()}</div>`;
             }
-            
+
             tooltip.innerHTML = `
                 <div>Largest Planet: <strong>${planetName}</strong></div>
                 ${dateStr}
             `;
-            
+
             tooltip.classList.add('show');
-            
+
             // Position tooltip
             const rect = li.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
-            
+
             let left = rect.right + 10;
             let top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-            
+
             // Keep tooltip on screen
             if (left + tooltipRect.width > window.innerWidth) {
                 left = rect.left - tooltipRect.width - 10;
@@ -1165,15 +1165,15 @@ function displayLeaderboard(leaderboard, isLocal = false) {
             if (top + tooltipRect.height > window.innerHeight) {
                 top = window.innerHeight - tooltipRect.height - 10;
             }
-            
+
             tooltip.style.left = left + 'px';
             tooltip.style.top = top + 'px';
         });
-        
+
         li.addEventListener('mouseleave', () => {
             tooltip.classList.remove('show');
         });
-        
+
         list.appendChild(li);
     });
 }
@@ -1199,7 +1199,7 @@ async function clearLeaderboard() {
         console.log('Firebase not initialized');
         return;
     }
-    
+
     try {
         await database.ref('leaderboard').remove();
         console.log('Leaderboard cleared successfully');
