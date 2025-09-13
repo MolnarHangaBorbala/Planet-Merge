@@ -1,41 +1,21 @@
 const { Engine, Render, Runner, World, Bodies, Events } = Matter;
 
-// ------------------ CURSOR ------------------
-const cursor = document.querySelector(".custom-cursor");
-document.addEventListener("mousemove", (e) => {
-    cursor.style.top = e.clientY + "px";
-    cursor.style.left = e.clientX + "px";
-});
-// ------------------------------------
-
-// remember toggle in localStorage
-let useRealisticPhysics = localStorage.getItem("useRealisticPhysics") === "true";
-
-const physicText = document.getElementById("physicT");
-function updatePhysicsText() {
-    physicText.textContent = useRealisticPhysics ? "Realistic" : "Arcade";
-}
-
-document.getElementById("toggle-physics").addEventListener("click", () => {
-    useRealisticPhysics = !useRealisticPhysics;
-    localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
-
-    alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
-
-    updatePhysicsText();
-
-    initPhysics();
-});
-updatePhysicsText();
-
 // ------------------ AUDIO ------------------
 const mergeSound = document.getElementById("merge-sfx");
 const gameOverSound = document.getElementById("game-over-sfx");
-const spawnSound = document.getElementById("spawn-sfx")
+const spawnSound = document.getElementById("spawn-sfx");
+const clickSound = document.getElementById("click-sfx");
+
+function playCSFX() {
+    try {
+        clickSound.volume = 1;
+        clickSound.currentTime = 0;
+        clickSound.play();
+    } catch (e) { }
+}
 
 function playMSFX() {
     try {
-
         mergeSound.currentTime = 0;
         mergeSound.play();
     } catch (e) { }
@@ -60,6 +40,32 @@ function playSSFX() {
         spawnSound.play();
     } catch (e) { }
 }
+
+// ------------------ CURSOR ------------------
+const cursor = document.querySelector(".custom-cursor");
+document.addEventListener("mousemove", (e) => {
+    cursor.style.top = e.clientY + "px";
+    cursor.style.left = e.clientX + "px";
+});
+// ------------------------------------
+
+// remember toggle in localStorage
+let useRealisticPhysics = localStorage.getItem("useRealisticPhysics") === "true";
+
+const physicText = document.getElementById("physicT");
+function updatePhysicsText() {
+    physicText.textContent = useRealisticPhysics ? "Realistic" : "Arcade";
+}
+
+document.getElementById("toggle-physics").addEventListener("click", () => {
+    useRealisticPhysics = !useRealisticPhysics;
+    localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
+    playCSFX();
+    alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
+    updatePhysicsText();
+    initPhysics();
+});
+updatePhysicsText();
 
 // ------------------ PLANETS ------------------
 const planetStages = [
@@ -895,19 +901,16 @@ function checkGameOver() {
 
     const lineY = 40 + 30 / 2 + 15;
 
-    const hitboxHeight = 60;
-    const touchingPlanets = world.bodies.filter(p =>
+    const passingPlanets = world.bodies.filter(p =>
         p.label === "planet" &&
-        p.position.y >= (lineY - hitboxHeight) &&
-        p.position.y <= lineY
+        (p.position.y - p.circleRadius) < lineY
     );
 
-    if (touchingPlanets.length > 0) {
+    if (passingPlanets.length > 0) {
         gameOverTriggered = true;
         playGOSFX();
         startAllPlanetsShake();
     }
-
 }
 
 Events.on(engine, "beforeUpdate", () => {
