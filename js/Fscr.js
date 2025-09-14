@@ -410,7 +410,7 @@ function drawPlanetSizeBox() {
         const paint = () => {
             sizeCtx.drawImage(img, xPad, targetY, w, h);
             sizeCtx.fillStyle = "white";
-            sizeCtx.font = "12px monospace";
+            sizeCtx.font = "14px monospace";
             sizeCtx.textBaseline = "middle";
             sizeCtx.fillText(`${stage.name} (${stage.points}pts)`, labelX, targetY + h / 2);
         };
@@ -1142,7 +1142,7 @@ function displayLeaderboard(leaderboard, isLocal = false) {
         const li = document.createElement("li");
 
         const displayName = entry.name || 'Anonymous';
-        li.textContent = `${displayName} — ${entry.score.toLocaleString()} pts`;
+        li.textContent = `${idx + 1}. ${displayName} — ${entry.score.toLocaleString()} pts`;
 
         // Tooltip
         li.addEventListener('mouseenter', (e) => {

@@ -201,9 +201,7 @@ html {
     font-family: c-space;
     cursor: url("../img/cur/tile_0097.png"), auto;
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-    transition: background-color 0.2s ease-in-out;
-    transition: color 0.2s ease-in-out;
-    transition: text-shadow 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
 }
 
 #physicT:hover,
@@ -261,6 +259,7 @@ html {
 
 #LB-inner-div {
     position: absolute;
+    padding: none;
     min-height: 250px;
     height: fit-content;
     width: 315px;
@@ -272,15 +271,15 @@ html {
     color: rgba(104, 104, 104, 0.856);
     font-size: 20px;
     border-bottom: 1px solid gray;
-    padding: 5px 0px 10px 15px;
-    transition: color 0.2s ease;
-    transition: background-color 0.2s ease-in-out;
-    transition: text-shadow 0.2s ease-in-out;
+    padding: 5px 0px 10px 10px;
+    transition: color 0.2s ease, background-color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
     font-weight: normal;
+    width: 300px;
 }
 
-li::marker {
-    font-weight: bold;
+#LB-list {
+    list-style: none;
+    transform: translateX(-35px);
 }
 
 #LB-list li:hover {
