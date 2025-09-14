@@ -156,7 +156,7 @@ html {
 #score {
     transform: translateY(-3px);
     float: left;
-    font-size: 32px;
+    font-size: 27px;
     border: 1px solid rgb(65, 65, 65);
     padding: 3px;
     border-radius: 3px;
