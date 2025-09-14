@@ -16,6 +16,7 @@ const mergeSound = document.getElementById("merge-sfx");
 const gameOverSound = document.getElementById("game-over-sfx");
 const spawnSound = document.getElementById("spawn-sfx");
 const clickSound = document.getElementById("click-sfx");
+const softClickSound = document.getElementById("soft-click-sfx");
 
 function playCSFX() {
     try {
@@ -53,6 +54,14 @@ function playSSFX() {
     } catch (e) { }
 }
 
+function playSCSFX() {
+    try {
+        softClickSound.volume = 0.5;
+        softClickSound.currentTime = 0;
+        softClickSound.play();
+    } catch (e) { }
+}
+
 // ------------------ CURSOR ------------------
 const cursor = document.querySelector(".custom-cursor");
 document.addEventListener("mousemove", (e) => {
@@ -68,16 +77,21 @@ const physicText = document.getElementById("physicT");
 function updatePhysicsText() {
     physicText.textContent = useRealisticPhysics ? "Realistic" : "Arcade";
 }
+updatePhysicsText();
+let currentGameMode = localStorage.getItem("useRealisticPhysics") === "true" ? "realistic" : "arcade";
 
+// Update toggle button listener
 document.getElementById("toggle-physics").addEventListener("click", () => {
     useRealisticPhysics = !useRealisticPhysics;
     localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
+
+    currentGameMode = useRealisticPhysics ? "realistic" : "arcade"; // <-- set mode
     playCSFX();
     alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
     updatePhysicsText();
     initPhysics();
+    updateLeaderboardDisplay(); // refresh leaderboard immediately
 });
-updatePhysicsText();
 
 // ------------------ PLANETS ------------------
 const planetStages = [
@@ -405,9 +419,9 @@ function drawPlanetSizeBox() {
         const paint = () => {
             sizeCtx.drawImage(img, xPad, targetY, w, h);
             sizeCtx.fillStyle = "white";
-            sizeCtx.font = "12px system-ui, Arial";
+            sizeCtx.font = "12px monospace";
             sizeCtx.textBaseline = "middle";
-            sizeCtx.fillText(`${stage.name} (${stage.points} pts)`, labelX, targetY + h / 2);
+            sizeCtx.fillText(`${stage.name} (${stage.points}pts)`, labelX, targetY + h / 2);
         };
 
         if (img.complete) paint();
@@ -765,7 +779,7 @@ function drawNextPlanetPreview() {
     previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     if (!previewImg) return;
     const stage = planetStages[nextStageIndex];
-    const scale = 0.8;
+    const scale = 1;
     previewCtx.drawImage(
         previewImg,
         previewCanvas.width / 2 - stage.radius * scale,
@@ -991,8 +1005,7 @@ function startAllPlanetsShake() {
 
 window.addEventListener("load", updateLeaderboardDisplay);
 
-// -------------------- FIREBASE LEADERBOARD (Claude)----------------------
-// Global leaderboard functions
+// -------------------- FIREBASE LEADERBOARD----------------------
 async function saveScoreToLeaderboard(score) {
     if (!isFirebaseInitialized) {
         console.log('Firebase not available, using local storage');
@@ -1003,24 +1016,22 @@ async function saveScoreToLeaderboard(score) {
     try {
         const name = prompt("Enter your name:", "Player") || "Player";
 
-        // Show submitting status
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
 
-        // Create score object
         const scoreData = {
-            name: name.substring(0, 20), // Limit name length
-            score: score,
+            name: name.substring(0, 8),
+            score,
             largestPlanet: largestPlanetReached,
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
 
-        // Push to Firebase
-        await database.ref('leaderboard').push(scoreData);
+        // Pick correct leaderboard node based on mode
+        const refName = currentGameMode === "arcade" ? "leaderboard_arcade" : "leaderboard_realistic";
+        await database.ref(refName).push(scoreData);
 
-        console.log('Score submitted successfully to global leaderboard!');
+        console.log(`Score submitted to ${refName}!`);
 
-        // Refresh leaderboard to show new score
         setTimeout(() => updateLeaderboardDisplay(), 1000);
 
     } catch (error) {
@@ -1034,7 +1045,8 @@ async function saveScoreToLeaderboard(score) {
 
 // Fallback to local storage
 function saveScoreToLocalLeaderboard(score) {
-    let leaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+    const key = currentGameMode === "arcade" ? "planetLeaderboard_arcade" : "planetLeaderboard_realistic";
+    let leaderboard = JSON.parse(localStorage.getItem(key) || "[]");
 
     const name = prompt("Enter your name:", "Player") || "Player";
 
@@ -1046,24 +1058,24 @@ function saveScoreToLocalLeaderboard(score) {
     });
 
     leaderboard = leaderboard.sort((a, b) => b.score - a.score).slice(0, 15);
-    localStorage.setItem("planetLeaderboard", JSON.stringify(leaderboard));
+    localStorage.setItem(key, JSON.stringify(leaderboard));
     displayLeaderboard(leaderboard, true);
     largestPlanetReached = 0;
 }
 
-// Update leaderboard display
 async function updateLeaderboardDisplay() {
     if (!isFirebaseInitialized) {
-        const localLeaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+        const key = currentGameMode === "arcade" ? "planetLeaderboard_arcade" : "planetLeaderboard_realistic";
+        const localLeaderboard = JSON.parse(localStorage.getItem(key) || "[]");
         displayLeaderboard(localLeaderboard, true);
         return;
     }
 
     try {
-        showLeaderboardLoading('Loading global leaderboard...');
+        showLeaderboardLoading(`Loading ${currentGameMode === "arcade" ? "Arcade" : "Realistic"} leaderboard...`);
 
-        // Get top 100 scores, ordered by score descending
-        const snapshot = await database.ref('leaderboard')
+        const refName = currentGameMode === "arcade" ? "leaderboard_arcade" : "leaderboard_realistic";
+        const snapshot = await database.ref(refName)
             .orderByChild('score')
             .limitToLast(100)
             .once('value');
@@ -1075,18 +1087,17 @@ async function updateLeaderboardDisplay() {
             return;
         }
 
-        // Convert to array and sort by score (highest first)
         const leaderboard = Object.values(data)
             .sort((a, b) => b.score - a.score)
-            .slice(0, 15); // Show top 15
+            .slice(0, 15);
 
         displayLeaderboard(leaderboard);
 
     } catch (error) {
         console.error('Error fetching leaderboard from Firebase:', error);
 
-        // Fallback to local
-        const localLeaderboard = JSON.parse(localStorage.getItem("planetLeaderboard") || "[]");
+        const key = currentGameMode === "arcade" ? "planetLeaderboard_arcade" : "planetLeaderboard_realistic";
+        const localLeaderboard = JSON.parse(localStorage.getItem(key) || "[]");
         displayLeaderboard(localLeaderboard, true);
     }
 }
@@ -1105,18 +1116,31 @@ function displayLeaderboard(leaderboard, isLocal = false) {
 
     list.innerHTML = "";
 
+    // Pick readable label for mode
+    const modeLabel = currentGameMode === "arcade" ? "Arcade" : "Realistic";
+
     // Update header
     if (header) {
-        header.textContent = isLocal ? 'Leaderboard (Local)' : 'Global Leaderboard';
+        header.textContent = (isLocal ? "Local " : "Global ") + " Leaderboard";
         header.style.color = isLocal ? '#ff6b6b' : 'aliceblue';
     }
 
     if (leaderboard.length === 0) {
-        list.innerHTML = '<li style="text-align: center; color: #888; font-style: italic;">No scores yet! Be the first!</li>';
+        list.innerHTML = `
+        <li style="
+            text-align: center; 
+            color: #888; 
+            font-style: italic;
+            transition: text-shadow 0.2s ease;
+        " 
+        onmouseover="this.style.textShadow='2px 2px 4px rgba(170, 170, 170, 0.6)'" 
+        onmouseout="this.style.textShadow='none'">
+            No scores yet!
+        </li>`;
         return;
     }
 
-    // Ensure tooltip exists (create if it doesn't)
+    // Ensure tooltip exists
     let tooltip = document.querySelector('.leaderboard-tooltip');
     if (!tooltip) {
         tooltip = document.createElement('div');
@@ -1130,7 +1154,7 @@ function displayLeaderboard(leaderboard, isLocal = false) {
         const displayName = entry.name || 'Anonymous';
         li.textContent = `${displayName} — ${entry.score.toLocaleString()} pts`;
 
-        // Add tooltip functionality
+        // Tooltip
         li.addEventListener('mouseenter', (e) => {
             const largestPlanetIndex = entry.largestPlanet || 0;
             const planetName = planetStages[largestPlanetIndex]?.name || 'Unknown';
@@ -1155,13 +1179,10 @@ function displayLeaderboard(leaderboard, isLocal = false) {
             let left = rect.right + 10;
             let top = rect.top + rect.height / 2 - tooltipRect.height / 2;
 
-            // Keep tooltip on screen
             if (left + tooltipRect.width > window.innerWidth) {
                 left = rect.left - tooltipRect.width - 10;
             }
-            if (top < 0) {
-                top = 10;
-            }
+            if (top < 0) top = 10;
             if (top + tooltipRect.height > window.innerHeight) {
                 top = window.innerHeight - tooltipRect.height - 10;
             }
@@ -1172,6 +1193,10 @@ function displayLeaderboard(leaderboard, isLocal = false) {
 
         li.addEventListener('mouseleave', () => {
             tooltip.classList.remove('show');
+        });
+
+        li.addEventListener('mouseenter', () => {
+            playSCSFX();
         });
 
         list.appendChild(li);
@@ -1200,8 +1225,12 @@ async function clearLeaderboard() {
     }
 
     try {
-        await database.ref('leaderboard').remove();
-        console.log('Leaderboard cleared successfully');
+        const refName = currentGameMode === "arcade"
+            ? "leaderboard_arcade"
+            : "leaderboard_realistic";
+
+        await database.ref(refName).remove();
+        console.log(`${refName} cleared successfully`);
         updateLeaderboardDisplay();
     } catch (error) {
         console.error('Error clearing leaderboard:', error);
@@ -1216,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "leaderboard-div": { default: "425px", fullscreen: "530px" },
         "score-div": { default: "350px", fullscreen: "440px" },
         "planet-size-box": { default: "20px", fullscreen: "90px" },
-        "game-container": {default: "0px", fullscreen: "60px"}
+        "game-container": { default: "0px", fullscreen: "60px" }
     };
 
     const elements = {};

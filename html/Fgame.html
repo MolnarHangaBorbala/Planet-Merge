@@ -36,7 +36,9 @@
 
     <!-- Preview outside the game container -->
     <div id="preview-container">
-        <p id="preview-label">Current planet</p>
+        <div id="PCtext-div">
+            <p id="preview-label">Current planet</p>
+        </div>
         <canvas id="next-planet-preview"></canvas>
         <button id="toggle-physics"><span id="physicT"></span></button>
     </div>
@@ -49,6 +51,7 @@
     <audio id="merge-sfx" src="../sfx/merge.mp3" preload="auto"></audio>
     <audio id="spawn-sfx" src="../sfx/spawn.mp3" preload="auto"></audio>
     <audio id="click-sfx" src="../sfx/click.mp3" preload="auto"></audio>
+    <audio id="soft-click-sfx" src="../sfx/soft-click.mp3" preload="auto"></audio>
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
