@@ -90,13 +90,13 @@ const planetStages = [
     { radius: 35, color: "hsl(0,0%,50%)", type: "rock", name: "Vesta", points: "20" },
     { radius: 50, color: "hsl(210,30%,60%)", type: "rock", name: "Pallas", points: "40" },
     { radius: 65, color: "hsl(220,50%,55%)", type: "rock", name: "Hygiea", points: "80" },
-    { radius: 80, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
-    { radius: 95, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
-    { radius: 115, color: "hsla(40, 64%, 45%, 1.00)", type: "gas", name: "Jupiter", points: "640" },
-    { radius: 135, color: "hsla(45, 36%, 55%, 1.00)", type: "saturn", name: "Saturn", points: "1,280" },
-    { radius: 155, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
-    { radius: 170, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
-    { radius: 190, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
+    { radius: 75, color: "hsl(25,80%,50%)", type: "rock", name: "Mars", points: "160" },
+    { radius: 85, color: "hsl(200,70%,45%)", type: "earth", name: "Earth", points: "320" },
+    { radius: 95, color: "hsla(40, 64%, 45%, 1.00)", type: "gas", name: "Jupiter", points: "640" },
+    { radius: 115, color: "hsla(45, 36%, 55%, 1.00)", type: "saturn", name: "Saturn", points: "1,280" },
+    { radius: 135, color: "hsl(15,80%,55%)", type: "star", name: "Solara", points: "2,560" },
+    { radius: 150, color: "hsl(280,70%,50%)", type: "star", name: "Rigel", points: "5,120" },
+    { radius: 170, color: "hsl(0,0%,0%)", type: "blackhole", name: "Abyss", points: "10,240" }
 ];
 
 // ------------------ SCORE ------------------
