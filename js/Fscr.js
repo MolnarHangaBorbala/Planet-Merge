@@ -15,16 +15,7 @@ function updateLargestPlanet(stageIndex) {
 const mergeSound = document.getElementById("merge-sfx");
 const gameOverSound = document.getElementById("game-over-sfx");
 const spawnSound = document.getElementById("spawn-sfx");
-const clickSound = document.getElementById("click-sfx");
 const softClickSound = document.getElementById("soft-click-sfx");
-
-function playCSFX() {
-    try {
-        clickSound.volume = 1;
-        clickSound.currentTime = 0;
-        clickSound.play();
-    } catch (e) { }
-}
 
 function playMSFX() {
     try {
@@ -86,7 +77,7 @@ document.getElementById("toggle-physics").addEventListener("click", () => {
     localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
 
     currentGameMode = useRealisticPhysics ? "realistic" : "arcade"; // <-- set mode
-    playCSFX();
+    playSCSFX();
     alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
     updatePhysicsText();
     initPhysics();
@@ -1130,7 +1121,6 @@ function displayLeaderboard(leaderboard, isLocal = false) {
         <li style="
             text-align: center; 
             color: #888; 
-            font-style: italic;
             transition: text-shadow 0.2s ease;
         " 
         onmouseover="this.style.textShadow='2px 2px 4px rgba(170, 170, 170, 0.6)'" 

@@ -276,6 +276,11 @@ html {
     transition: color 0.2s ease;
     transition: background-color 0.2s ease-in-out;
     transition: text-shadow 0.2s ease-in-out;
+    font-weight: normal;
+}
+
+li::marker {
+    font-weight: bold;
 }
 
 #LB-list li:hover {
