@@ -44,13 +44,34 @@
     </div>
 
     <div id="sound-container">
-
+        <div id="sound-div" onclick="toggleSound()">
+            <img id="sound-icon" src="../img/sound-off.png" alt="Sound Icon">
+            <div class="equalizer" id="eq-id">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
     </div>
 
     <audio id="game-over-sfx" src="../sfx/game-over.mp3" preload="auto"></audio>
     <audio id="merge-sfx" src="../sfx/merge.mp3" preload="auto"></audio>
     <audio id="spawn-sfx" src="../sfx/spawn.mp3" preload="auto"></audio>
     <audio id="soft-click-sfx" src="../sfx/soft-click.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="../sfx/background.mp3" preload="auto" loop></audio>
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

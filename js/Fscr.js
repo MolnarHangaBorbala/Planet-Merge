@@ -16,6 +16,31 @@ const mergeSound = document.getElementById("merge-sfx");
 const gameOverSound = document.getElementById("game-over-sfx");
 const spawnSound = document.getElementById("spawn-sfx");
 const softClickSound = document.getElementById("soft-click-sfx");
+const bgMusic = document.getElementById("bg-music");
+
+const soundIcon = document.getElementById("sound-icon");
+const soundContainer = document.getElementById("eq-id");
+
+let paused = true;
+soundContainer.classList.add("paused");
+bgMusic.currentTime = 0;
+
+function toggleSound() {
+    if (bgMusic.paused) {
+        bgMusic.play();
+        soundIcon.style.width = "50px";
+        soundIcon.src = "../img/sound-on.png";
+        paused = false;
+        soundContainer.classList.remove("paused");
+    } else {
+        bgMusic.pause();
+        soundIcon.style.width = "32px";
+        soundIcon.src = "../img/sound-off.png";
+        paused = true;
+        soundContainer.classList.add("paused");
+    }
+}
+
 
 function playMSFX() {
     try {
