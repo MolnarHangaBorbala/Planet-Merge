@@ -56,12 +56,12 @@ function playGOSFX() {
     try {
         if (!playGOSFX.played) {
             playGOSFX.played = true;
-            bgMusic.volume = 0.2;
+            fadeVolume(bgMusic, 0.2, 1000);
             gameOverSound.volume = 0.5;
             gameOverSound.currentTime = 0;
             gameOverSound.play();
             setTimeout(() => {
-                bgMusic.volume = 0.8;
+                fadeVolume(bgMusic, 0.8, 1000);
             }, 4000);
         }
     } catch (e) { }
