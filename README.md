@@ -17,6 +17,8 @@
 - **Modes**: Switch between Arcade/Realistic mode.
 - **Leaderboard**: Global leaderboard with [Firebase](https://firebase.google.com/) database.
 
+- (Press ctrl + move the scrollwheel forward to ZOOM IN, scroll backwards to ZOOM OUT)
+
 ---
 
 ## 🛸 Quick Start
