@@ -21,26 +21,28 @@ const bgMusic = document.getElementById("bg-music");
 const soundIcon = document.getElementById("sound-icon");
 const soundContainer = document.getElementById("eq-id");
 
-let paused = true;
+bgMusic.volume = 0;
+let paused = false;
 soundContainer.classList.add("paused");
-bgMusic.currentTime = 0;
 
 function toggleSound() {
-    if (bgMusic.paused) {
+    if (!paused) {
         bgMusic.play();
-        soundIcon.style.width = "50px";
         soundIcon.src = "../img/sound-on.png";
-        paused = false;
+        soundIcon.style.width = "50px";
         soundContainer.classList.remove("paused");
-    } else {
-        bgMusic.pause();
-        soundIcon.style.width = "32px";
-        soundIcon.src = "../img/sound-off.png";
+
+        fadeVolume(bgMusic, 0.8, 750);
         paused = true;
+    } else {
+        fadeVolume(bgMusic, 0, 750);
+        soundIcon.src = "../img/sound-off.png";
+        soundIcon.style.width = "32px";
         soundContainer.classList.add("paused");
+
+        paused = false;
     }
 }
-
 
 function playMSFX() {
     try {
@@ -54,9 +56,13 @@ function playGOSFX() {
     try {
         if (!playGOSFX.played) {
             playGOSFX.played = true;
+            bgMusic.volume = 0.2;
             gameOverSound.volume = 0.5;
             gameOverSound.currentTime = 0;
             gameOverSound.play();
+            setTimeout(() => {
+                bgMusic.volume = 0.8;
+            }, 4000);
         }
     } catch (e) { }
 }
@@ -64,7 +70,7 @@ function resetGOSFX() { playGOSFX.played = false; }
 
 function playSSFX() {
     try {
-        spawnSound.volume = 0.2;
+        spawnSound.volume = 0.4;
         spawnSound.currentTime = 0;
         spawnSound.play();
     } catch (e) { }
@@ -76,6 +82,27 @@ function playSCSFX() {
         softClickSound.currentTime = 0;
         softClickSound.play();
     } catch (e) { }
+}
+
+// ------------------ VOLUME FADE ------------------
+function fadeVolume(audio, targetVolume, duration = 1000) {
+    const startVolume = audio.volume;
+    const delta = targetVolume - startVolume;
+    const startTime = performance.now();
+
+    function tick(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+        audio.volume = startVolume + delta * eased;
+
+        if (progress < 1) {
+            requestAnimationFrame(tick);
+        } else if (targetVolume === 0) {
+            audio.pause();
+        }
+    }
+
+    requestAnimationFrame(tick);
 }
 
 // ------------------ CURSOR ------------------

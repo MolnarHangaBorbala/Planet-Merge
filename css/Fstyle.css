@@ -360,6 +360,7 @@ html {
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 5px;
+    cursor: url("../img/cur/tile_0097.png"), auto;
 }
 
 #sound-div {
@@ -372,7 +373,6 @@ html {
 
 #sound-container:hover #sound-div {
     background-color: rgba(255, 255, 255, 0.13);
-    cursor: url("../img/cur/tile_0097.png"), auto;
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -402,7 +402,7 @@ html {
 
 .bar {
     width: 7px;
-    height: 10px;
+    height: 5px;
     border-radius: 2px;
     background-color: rgb(226, 226, 226);
     animation: bounce 3s ease-in-out infinite;
@@ -482,7 +482,7 @@ html {
 
     0%,
     100% {
-        height: 10px;
+        height: 5px;
     }
 
     50% {
