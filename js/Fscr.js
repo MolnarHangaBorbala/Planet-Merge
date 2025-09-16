@@ -258,6 +258,7 @@ function initPhysics() {
 
     engine = Engine.create();
     world = engine.world;
+    engine.gravity.y = useRealisticPhysics ? 0.25 : 1;
 
     if (useRealisticPhysics && typeof enableRealisticPhysics === "function") {
         enableRealisticPhysics(engine, world, planetStages, updateScoreDisplay, function (pts) {
@@ -700,53 +701,53 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
     const stage = stages[stageIndex];
     const img = createPlanetImage(stage);
 
-    // --- Base physics scaling ---
-    const baseDensity = 0.00002; // tweak for balance
+    const baseDensity = 0.000008;
     let density = baseDensity * Math.pow(stage.radius, 2);
-    let restitution = 0.15;       // slightly bouncier for natural motion
-    let friction = 0.05;
-    let frictionAir = 0.002;
+    let restitution = 0.35;
+    let friction = 0.02;
+    let frictionAir = 0.0007;
 
     let specialEffect = null;
 
     switch (stage.type) {
         case "rock":
-            restitution = 0.25;
-            friction = 0.2;
+            restitution = 0.40;
+            friction = 0.02;
             break;
 
         case "earth":
-            friction = 0.25;        // simulates atmosphere drag
-            frictionAir = 0.003;
+            friction = 0.03;
+            frictionAir = 0.001;
+            restitution = 0.38;
             break;
 
         case "gas":
-            density *= 1.2;         // slightly heavier than rock
-            restitution = 0.1;
-            frictionAir = 0.004;
-            specialEffect = "weakGravity";  // gentle attraction
+            density *= 1.1;
+            restitution = 0.45;
+            frictionAir = 0.0005;
+            specialEffect = "weakGravity";
             break;
 
         case "saturn":
-            density *= 1.4;
-            restitution = 0.12;
-            frictionAir = 0.003;
-            specialEffect = "repelRing";    // pushes nearby planets
+            density *= 1.2;
+            restitution = 0.42;
+            frictionAir = 0.0008;
+            specialEffect = "repelRing";
             break;
 
         case "star":
-            density *= 2.5;          // very massive
-            restitution = 0.05;
-            frictionAir = 0.005;
-            specialEffect = "strongGravity"; // pulls strongly
+            density *= 2.0;
+            restitution = 0.30;
+            frictionAir = 0.001;
+            specialEffect = "strongGravity";
             break;
 
         case "blackhole":
-            density *= 15;           // extreme mass
-            restitution = 0;
-            friction = 1;
-            frictionAir = 0;
-            specialEffect = "blackhole";    // consumes nearby planets
+            density *= 10;
+            restitution = 0.05;
+            friction = 0.5;
+            frictionAir = 0.001;
+            specialEffect = "blackhole";
             break;
     }
 
@@ -755,7 +756,7 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
         restitution,
         friction,
         frictionAir,
-        inertia: Infinity,             // prevents spinning too fast
+        inertia: Infinity,
         label: "planet",
         render: {
             sprite: { texture: img.src, xScale: 1, yScale: 1 }
@@ -765,22 +766,18 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
     planet.stage = stageIndex;
     planet.specialEffect = specialEffect;
 
-    // --- subtle initial push for more natural motion ---
     const angle = Math.random() * Math.PI * 2;
-    const speed = 0.5 + Math.random() * 0.5;
+    const speed = 0.7 + Math.random() * 0.6; 
     Matter.Body.setVelocity(planet, {
         x: Math.cos(angle) * speed,
         y: Math.sin(angle) * speed
     });
 
-    // --- small spin for realism ---
     const spin = (Math.random() - 0.5) * 0.02;
     Matter.Body.setAngularVelocity(planet, spin);
 
     return planet;
 }
-
-
 //---------------------------------------------------
 
 function spawnPlanet(x, stageIndex, y) {
