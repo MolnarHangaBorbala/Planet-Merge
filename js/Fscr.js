@@ -1054,7 +1054,7 @@ async function saveScoreToLeaderboard(score) {
     }
 
     try {
-        const name = prompt("Enter your name:", "Player") || "Player";
+        const name = prompt("Enter your name (max 8 characters):", "Player") || "Player";
 
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
@@ -1313,4 +1313,5 @@ document.addEventListener("DOMContentLoaded", () => {
     adjustTop();
 
     window.addEventListener("resize", adjustTop);
+
 });
