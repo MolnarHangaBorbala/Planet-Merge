@@ -1,12 +1,10 @@
-# 🚀 Planet Merge: The Next-Gen Cosmic Puzzle
+# 🚀 Cosmendra - “Forge the Cosmos, One World at a Time.”
 
 [![Live on Netlify](https://img.shields.io/badge/Live_on-Netlify-brightgreen?style=for-the-badge&logo=netlify&logoColor=white)](https://planet-merge.netlify.app/)
 
 [https://planet-merge.netlify.app/](https://planet-merge.netlify.app/)
 
 **Planet Merge** is a visually immersive, physics-powered puzzle game set in the depths of space. Merge celestial bodies, unlock cosmic secrets, and ascend to the ultimate blackhole!
-
-#NEW NAME + show button (deletes first 3 planets) once on spawning Solara
 
 ---
 
@@ -73,14 +71,8 @@
 
 ## 🪐 Roadmap
 
-- Planet skins & upgrades
-- ~~Leaderboards powered by quantum AI~~
+- NEW NAME + show button (deletes first 3 planets) once on spawning Solara
 
----
-
-## 🤖 License
-
-MIT © 2088-present Cosmic Merge Labs
 
 ---
 
