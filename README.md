@@ -6,7 +6,7 @@
 
 **Planet Merge** is a visually immersive, physics-powered puzzle game set in the depths of space. Merge celestial bodies, unlock cosmic secrets, and ascend to the ultimate blackhole!
 
-#NEW NAME + show button (deletes first 3 planets) once on showing orange star
+#NEW NAME + show button (deletes first 3 planets) once on spawning Solara
 
 ---
 
