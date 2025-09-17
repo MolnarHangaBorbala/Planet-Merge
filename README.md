@@ -67,6 +67,7 @@
 - **Matter.js Physics**
 - **CSS3 Animations**
 - **Vanilla JavaScript**
+- **Firebase database**
 
 ---
 
