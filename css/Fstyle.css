@@ -189,7 +189,8 @@ html {
 }
 
 /* Toggle BTN */
-#toggle-physics {
+#toggle-physics,
+#delete-s-planets {
     margin-top: 0px;
     width: 230px;
     font-size: 20px;
@@ -205,13 +206,24 @@ html {
 }
 
 #physicT:hover,
-#toggle-physics:hover {
+#toggle-physics:hover,
+#delete-s-planets:hover {
     color: beige;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
 }
 
-#toggle-physics:hover {
+#toggle-physics:hover,
+#delete-s-planets:hover {
     background-color: rgba(255, 255, 255, 0.253);
+}
+
+#delete-s-planets {
+    margin-top: 10px;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* Leaderboard */
@@ -346,6 +358,40 @@ html {
 }
 
 .leaderboard-tooltip.show {
+    opacity: 1;
+}
+
+/* DELETE BUTTON */
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltiptext {
+    visibility: hidden;
+    width: 260px;
+    background: rgba(0, 0, 0, 0.92);
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 100;
+    top: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+}
+
+.tooltip:hover .tooltiptext,
+.tooltip:focus-within .tooltiptext {
+    visibility: visible;
     opacity: 1;
 }
 

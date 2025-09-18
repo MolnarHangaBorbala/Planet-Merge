@@ -234,6 +234,18 @@ function absorbNearbyPlanets(blackhole, planets) {
     }
 }
 
+const DeleteBTN = document.getElementById("delete-s-planets");
+function DISABLE() {
+    DeleteBTN.classList.add("disabled");
+    playSCSFX();
+    const planets = world.bodies.filter(b => b.label === "planet");
+    for (let p of planets) {
+        if (p.stage >= 0 && p.stage <= 2) {
+            World.remove(world, p);
+        }
+    }
+}
+
 function initPhysics() {
     if (engine) {
         try { if (runner) Runner.stop(runner); } catch (err) { }
@@ -328,7 +340,7 @@ function initPhysics() {
                         const elapsed = Date.now() - start;
                         if (elapsed > shakeDuration) {
                             planets.forEach(p => {
-                                World.remove(world, p); // disappear
+                                World.remove(world, p);
                             });
                             clearInterval(shakeInterval);
                             return;
@@ -347,10 +359,9 @@ function initPhysics() {
                         });
                     }, 50);
 
-                    return; // skip normal merge logic
+                    return;
                 }
 
-                // Normal merge logic
                 if (bodyA.stage === bodyB.stage && bodyA.stage < planetStages.length - 1) {
                     const nextStage = bodyA.stage + 1;
                     const stageData = planetStages[nextStage];
@@ -371,13 +382,15 @@ function initPhysics() {
                     newPlanet.stage = nextStage;
                     updateLargestPlanet(nextStage);
 
-
-                    // Assign special effects
                     if (stageData.type === "blackhole") {
                         newPlanet.specialEffect = "blackhole";
                     }
 
                     World.add(world, newPlanet);
+
+                    if (nextStage === 8) {
+                        DeleteBTN.classList.remove("disabled");
+                    }
 
                     const points = parseInt(stageData.points.replace(/,/g, ""));
                     score += points;
@@ -772,13 +785,11 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
     return planet;
 }
 //---------------------------------------------------
-
 function spawnPlanet(x, stageIndex, y) {
     updateLargestPlanet(stageIndex);
     if (useRealisticPhysics) {
         return createRealisticPlanet(stageIndex, x, y, planetStages);
     } else {
-        // your original arcade planet spawn
         const stage = planetStages[stageIndex];
         const img = createPlanetImage(stage);
         const planet = Bodies.circle(x, y, stage.radius, {
@@ -1047,7 +1058,7 @@ async function saveScoreToLeaderboard(score) {
     }
 
     try {
-        const name = prompt("Enter your name (max 8 characters):", "Player") || "Player";
+        const name = prompt("Enter your name:", "Player") || "Player";
 
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
@@ -1194,7 +1205,18 @@ function displayLeaderboard(leaderboard, isLocal = false) {
             let dateStr = '';
             if (entry.timestamp) {
                 const date = new Date(entry.timestamp);
-                dateStr = `<div style="font-size: 12px; color: #aaa; margin-top: 4px;">Date: ${date.toLocaleDateString()}</div>`;
+
+                const pad = (num) => String(num).padStart(2, '0');
+
+                const year = date.getFullYear();
+                const month = pad(date.getMonth() + 1);
+                const day = pad(date.getDate());
+                const hours = pad(date.getHours());
+                const minutes = pad(date.getMinutes());
+
+                const formatted = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+                dateStr = `<div style="font-size: 12px; color: #aaa; margin-top: 4px;">Date: ${formatted}</div>`;
             }
 
             tooltip.innerHTML = `
@@ -1306,6 +1328,4 @@ document.addEventListener("DOMContentLoaded", () => {
     adjustTop();
 
     window.addEventListener("resize", adjustTop);
-
 });
-

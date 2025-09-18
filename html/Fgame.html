@@ -40,7 +40,15 @@
             <p id="preview-label">Current planet</p>
         </div>
         <canvas id="next-planet-preview"></canvas>
-        <button id="toggle-physics"><span id="physicT"></span></button>
+        <button id="toggle-physics">
+            <span id="physicT"></span>
+        </button>
+        <div class="tooltip">
+            <button id="delete-s-planets" class="disabled" onclick="DISABLE()">
+                <span id="deleteT">Delete</span>
+                <span class="tooltiptext">Removes all Ceres, Vesta, and Pallas planets (first three stages) <b>ONCE</b></span>
+            </button>
+        </div>
     </div>
 
     <div id="sound-container">
