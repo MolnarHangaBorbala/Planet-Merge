@@ -766,13 +766,6 @@ function createRealisticPlanet(stageIndex, x, y, stages) {
     planet.stage = stageIndex;
     planet.specialEffect = specialEffect;
 
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 0.7 + Math.random() * 0.6; 
-    Matter.Body.setVelocity(planet, {
-        x: Math.cos(angle) * speed,
-        y: Math.sin(angle) * speed
-    });
-
     const spin = (Math.random() - 0.5) * 0.02;
     Matter.Body.setAngularVelocity(planet, spin);
 
@@ -1315,3 +1308,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", adjustTop);
 
 });
+
