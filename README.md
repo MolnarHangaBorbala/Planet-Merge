@@ -71,7 +71,10 @@
 
 ## 🪐 Roadmap
 
-- NEW NAME + show button (deletes first 3 planets) once on spawning Solara
+- ~~NEW NAME + show button (deletes first 3 planets) once on spawning Solara~~
+- Fix red circles around planets
+- Make the delete ULT stackable
+
 
 
 ---
