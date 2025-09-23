@@ -370,6 +370,7 @@ html {
 
 /* Tooltip text */
 .tooltiptext {
+    border: 1px groove rgb(102, 102, 102);
     visibility: hidden;
     width: 260px;
     background: rgba(0, 0, 0, 0.92);
@@ -393,6 +394,14 @@ html {
 .tooltip:focus-within .tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+/* RED PLANET OUTLINE */
+.planet-outline-red {
+    outline: 3px solid rgba(196, 0, 0, 0.589) !important;
+    box-shadow: 0 0 12px 2px rgba(156, 0, 0, 0.438);
+    border-radius: 50%;
+    z-index: 9999;
 }
 
 /* SOUND */

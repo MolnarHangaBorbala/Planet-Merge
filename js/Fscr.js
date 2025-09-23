@@ -128,7 +128,7 @@ document.getElementById("toggle-physics").addEventListener("click", () => {
     useRealisticPhysics = !useRealisticPhysics;
     localStorage.setItem("useRealisticPhysics", useRealisticPhysics);
 
-    currentGameMode = useRealisticPhysics ? "realistic" : "arcade"; // <-- set mode
+    currentGameMode = useRealisticPhysics ? "realistic" : "arcade";
     playSCSFX();
     alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
     updatePhysicsText();
@@ -234,16 +234,21 @@ function absorbNearbyPlanets(blackhole, planets) {
     }
 }
 
-const DeleteBTN = document.getElementById("delete-s-planets");
+let deleteUses = 0;
+const deleteBTN = document.getElementById("delete-s-planets");
 function DISABLE() {
-    DeleteBTN.classList.add("disabled");
+    if (deleteUses <= 0) return; // Prevent use if no uses left
+
+    // Only proceed if there are planets to delete
+    const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
+    if (planets.length === 0) return;
+
     playSCSFX();
-    const planets = world.bodies.filter(b => b.label === "planet");
     for (let p of planets) {
-        if (p.stage >= 0 && p.stage <= 2) {
-            World.remove(world, p);
-        }
+        World.remove(world, p);
     }
+    deleteUses--;
+    updateDeleteButtonLabel();
 }
 
 function initPhysics() {
@@ -389,7 +394,9 @@ function initPhysics() {
                     World.add(world, newPlanet);
 
                     if (nextStage === 8) {
-                        DeleteBTN.classList.remove("disabled");
+                        deleteBTN.classList.remove("disabled");
+                        deleteUses++;
+                        updateDeleteButtonLabel();
                     }
 
                     const points = parseInt(stageData.points.replace(/,/g, ""));
@@ -439,6 +446,34 @@ function initPhysics() {
     render.canvas.addEventListener("mousedown", spawnHandler);
 }
 initPhysics();
+deleteBTN.addEventListener("mouseenter", () => {
+    if (!deleteBTN.classList.contains("disabled")) {
+        const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
+        for (let p of planets) {
+            p.render.outline = "red";
+            p.render.outlineWidth = 3;
+        }
+    }
+});
+
+deleteBTN.addEventListener("mouseleave", () => {
+    const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
+    for (let p of planets) {
+        p.render.outline = null;
+        p.render.outlineWidth = 0;
+    }
+});
+
+function updateDeleteButtonLabel() {
+    const deleteT = document.getElementById("deleteT");
+    deleteT.textContent = `Delete |${deleteUses}|`;
+    if (deleteUses <= 0) {
+        deleteBTN.classList.add("disabled");
+    } else {
+        deleteBTN.classList.remove("disabled");
+    }
+}
+updateDeleteButtonLabel();
 
 // ------------------ PLANET SIZE BOX ------------------
 // Draws the planet progression list on the left
@@ -976,6 +1011,21 @@ container.addEventListener('mouseleave', () => mouseX = null);
     overlayCtx.stroke();
     overlayCtx.setLineDash([]);
 
+    const planets = world.bodies.filter(p => p.label === "planet");
+    for (const planet of planets) {
+        if (planet.render.outline === "red") {
+            overlayCtx.save();
+            overlayCtx.beginPath();
+            overlayCtx.arc(planet.position.x, planet.position.y, planet.circleRadius + 2, 0, 2 * Math.PI);
+            overlayCtx.strokeStyle = "red";
+            overlayCtx.lineWidth = planet.render.outlineWidth || 3;
+            overlayCtx.shadowColor = "red";
+            overlayCtx.shadowBlur = 8;
+            overlayCtx.stroke();
+            overlayCtx.restore();
+        }
+    }
+
     requestAnimationFrame(drawOverlay);
 })();
 
@@ -1328,4 +1378,4 @@ document.addEventListener("DOMContentLoaded", () => {
     adjustTop();
 
     window.addEventListener("resize", adjustTop);
-});
+}); 
