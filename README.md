@@ -74,6 +74,7 @@
 - [x] NEW NAME + show button (deletes first 3 planets) once on spawning Solara -Rebeka
 - [x] Fix red(now hotpink) circles around planets
 - [x] Make the delete ULT stackable
+- [ ] Max deleteUses???
 
 
 
