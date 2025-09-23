@@ -393,7 +393,7 @@ function initPhysics() {
 
                     World.add(world, newPlanet);
 
-                    if (nextStage === 5) {
+                    if (nextStage === 8) {
                         deleteBTN.classList.remove("disabled");
                         deleteUses++;
                         updateDeleteButtonLabel();
@@ -450,7 +450,7 @@ deleteBTN.addEventListener("mouseenter", () => {
     if (!deleteBTN.classList.contains("disabled")) {
         const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
         for (let p of planets) {
-            p.render.outline = "red";
+            p.render.outline = "hotpink";
             p.render.outlineWidth = 3;
         }
     }
@@ -1013,13 +1013,13 @@ container.addEventListener('mouseleave', () => mouseX = null);
 
     const planets = world.bodies.filter(p => p.label === "planet");
     for (const planet of planets) {
-        if (planet.render.outline === "red") {
+        if (planet.render.outline) {
             overlayCtx.save();
             overlayCtx.beginPath();
             overlayCtx.arc(planet.position.x, planet.position.y, planet.circleRadius + 2, 0, 2 * Math.PI);
-            overlayCtx.strokeStyle = "red";
+            overlayCtx.strokeStyle = planet.render.outline;
             overlayCtx.lineWidth = planet.render.outlineWidth || 3;
-            overlayCtx.shadowColor = "red";
+            overlayCtx.shadowColor = planet.render.outline;
             overlayCtx.shadowBlur = 8;
             overlayCtx.stroke();
             overlayCtx.restore();
