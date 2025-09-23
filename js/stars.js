@@ -1,12 +1,6 @@
 const starsCanvas = document.getElementById('stars-canvas');
 const starsCtx = starsCanvas.getContext('2d');
 
-function resizeStars() {
-    starsCanvas.width = window.innerWidth;
-    starsCanvas.height = window.innerHeight;
-}
-resizeStars();
-window.addEventListener('resize', resizeStars);
 
 const starCount = 200;
 const stars = [];
@@ -21,6 +15,22 @@ for (let i = 0; i < starCount; i++) {
         vy: (Math.random() - 0.5) * 0.1
     });
 }
+
+function resizeStars() {
+    const oldWidth = starsCanvas.width;
+    const oldHeight = starsCanvas.height;
+    starsCanvas.width = window.innerWidth;
+    starsCanvas.height = window.innerHeight;
+
+    for (let s of stars) {
+        s.x = Math.random() * starsCanvas.width;
+        s.y = Math.random() * starsCanvas.height;
+    }
+}
+resizeStars();
+window.addEventListener('resize', resizeStars);
+
+
 
 function drawStars() {
     starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
