@@ -76,6 +76,24 @@
 - [x] Make the delete ULT stackable
 - [ ] Max deleteUses??? 396
 
+## Possible names
+
+- Planet Merge
+- Cosmic Fusion
+- Stellar Merge
+- Orbit Overlap
+- Celestial Merge
+- AstroMerge
+- Planetary Puzzle
+- Merge the Cosmos
+- Galactic Merge
+- Solar Synthesis
+- Nebula Merge
+- Gravity Merge
+- Planet Stackers
+- Stellar Stack
+- Astro Alchemy
+
 
 
 ---
