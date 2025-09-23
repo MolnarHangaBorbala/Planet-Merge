@@ -1066,8 +1066,7 @@ function startAllPlanetsShake() {
     const originalPositions = planets.map(p => ({ x: p.position.x, y: p.position.y }));
     const start = Date.now();
     const shakeDuration = 3000;
-    cursor.style.display = "none";
-    cursor.classList.add("noCur");
+    cursor.classList.add("noCursor");
 
     const shakeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
@@ -1082,8 +1081,7 @@ function startAllPlanetsShake() {
 
             clearInterval(shakeInterval);
             resetGameOver();
-            cursor.style.display = "block";
-            cursor.classList.add("noCur");
+            cursor.classList.remove("noCursor");
             deleteUses = 0;
             updateDeleteButtonLabel();
             return;
