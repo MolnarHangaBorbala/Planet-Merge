@@ -71,9 +71,9 @@
 
 ## 🪐 Roadmap
 
-- ~~NEW NAME + show button (deletes first 3 planets) once on spawning Solara~~
-- Fix red circles around planets
-- Make the delete ULT stackable
+- [x] NEW NAME + show button (deletes first 3 planets) once on spawning Solara -Rebeka
+- [x] Fix red(now hotpink) circles around planets
+- [x] Make the delete ULT stackable
 
 
 
