@@ -1104,6 +1104,7 @@ function startAllPlanetsShake() {
 window.addEventListener("load", updateLeaderboardDisplay);
 
 // -------------------- FIREBASE LEADERBOARD----------------------
+
 async function saveScoreToLeaderboard(score) {
     if (!isFirebaseInitialized) {
         console.log('Firebase not available, using local storage');
@@ -1112,7 +1113,11 @@ async function saveScoreToLeaderboard(score) {
     }
 
     try {
-        const name = prompt("Enter your name:", "Player") || "Player";
+        const lastPlayerName = localStorage.getItem('playerName') || "Player";
+        const name = prompt("Enter your name:", lastPlayerName) || lastPlayerName;
+
+        // Save the name for next time
+        localStorage.setItem('playerName', name);
 
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
@@ -1124,7 +1129,6 @@ async function saveScoreToLeaderboard(score) {
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
 
-        // Pick correct leaderboard node based on mode
         const refName = currentGameMode === "arcade" ? "leaderboard_arcade" : "leaderboard_realistic";
         await database.ref(refName).push(scoreData);
 
@@ -1382,4 +1386,73 @@ document.addEventListener("DOMContentLoaded", () => {
     adjustTop();
 
     window.addEventListener("resize", adjustTop);
-}); 
+});
+
+// ------------------ PLAYER COUNTER ------------------
+const playerCountRef = database.ref('playerCount');
+const playersRef = database.ref('activePlayers');
+
+let currentPlayerRef = null;
+const PLAYER_ID_KEY = 'playerId';
+
+function updatePlayerCounter(count) {
+    const counterEl = document.getElementById('player-counter');
+    if (counterEl) {
+        counterEl.textContent = `Players Online: ${count}`;
+    }
+}
+
+// Firebase listener
+playerCountRef.on('value', (snapshot) => {
+    const count = snapshot.val() || 0;
+    updatePlayerCounter(count);
+});
+
+function getPlayerId() {
+    let id = localStorage.getItem(PLAYER_ID_KEY);
+    if (!id) {
+        id = Date.now() + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(PLAYER_ID_KEY, id);
+    }
+    return id;
+}
+
+const playerId = getPlayerId();
+let hasJoined = false; // Ensure join only once per session
+
+function playerJoin() {
+    if (hasJoined) return; // Prevent multiple joins in same session
+
+    currentPlayerRef = playersRef.child(playerId);
+    currentPlayerRef.set({ joinedAt: firebase.database.ServerValue.TIMESTAMP })
+        .catch((err) => console.error('Error setting active player:', err));
+    currentPlayerRef.onDisconnect().remove();
+
+    // Only increment if this is a new session
+    playerCountRef.transaction((current) => (current || 0) + 1)
+        .then(() => {
+            hasJoined = true; // Mark as joined
+        })
+        .catch((err) => console.error('Transaction error:', err));
+}
+
+function playerLeave() {
+    if (currentPlayerRef) {
+        currentPlayerRef.remove().catch((err) => console.error('Remove error:', err));
+        playerCountRef.transaction((current) => (current || 1) - 1)
+            .catch((err) => console.error('Transaction error:', err));
+    }
+}
+
+window.addEventListener('load', () => {
+    playerJoin();
+});
+
+window.addEventListener('beforeunload', () => {
+    playerLeave();
+});
+
+// ------------------ reset count ------------------
+function resetPlayerCount() {
+    firebase.database().ref('playerCount').set(0);
+}

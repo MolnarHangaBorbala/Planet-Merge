@@ -402,6 +402,19 @@ html {
     display: none;
 }
 
+/* PLAYERS ONLINE */
+#player-counter {
+    color: white;
+    position: absolute;
+    bottom: 100px;
+    left: 18px;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.068);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
 /* SOUND */
 #sound-container {
     height: 50px;
