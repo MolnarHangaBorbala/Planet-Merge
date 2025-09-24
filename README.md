@@ -27,6 +27,7 @@
 🎮 **Dual Game Modes** - Switch between Arcade and Realistic physics modes  
 🏆 **Global Leaderboard** - Compete worldwide with [Firebase](https://firebase.google.com/) integration that remembers your name  
 🔍 **Zoom Controls** - Press `Ctrl + scroll wheel` to zoom in/out for optimal gameplay perspective  
+👥 **Player Counter**: - Online player's number shown in realtime 
 
 ## 🚀 Quick Start
 
