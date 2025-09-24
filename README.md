@@ -15,9 +15,8 @@
 - **Progression System**: Evolve from asteroids to stars and blackholes.
 - **UFO Overlay**: Futuristic tractor beam guides your next move.
 - **Modes**: Switch between Arcade/Realistic mode.
-- **Leaderboard**: Global leaderboard with [Firebase](https://firebase.google.com/) database.
-
-- (Press ctrl + move the scrollwheel forward to ZOOM IN, scroll backwards to ZOOM OUT)
+- Leaderboard: Global leaderboard with [Firebase](https://firebase.google.com/) database that remembers your name for quick score submission.
+- Zoom Controls: Press Ctrl + scroll wheel to zoom in/out for better gameplay perspective. 
 
 ---
 
