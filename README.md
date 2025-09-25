@@ -90,7 +90,7 @@ flowchart TD
 - **Leaderboard Display**: Shows top scores in real-time (Firebase).  
 - **UI Overlay**: Chat box, player counter, and control buttons.
   
-[edit](https://excalidraw.com/#json=Nmvb81HdAXo1kWOfbW7Um,Zhe1-btf65rQIpKb-SL61A)
+<img width="1443" height="792" alt="image" src="https://github.com/user-attachments/assets/084667cb-1a70-405e-8237-166c0c1005b9" />
 
 ---
 
