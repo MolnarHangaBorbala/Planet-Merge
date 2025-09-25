@@ -600,6 +600,11 @@ html {
     flex-direction: column;
     overflow: hidden;
     display: none;
+    cursor: url("../img/cur/move.png"), auto;
+}
+
+#chat-container.dragging {
+    cursor: url("../img/cur/movefull.png"), move;
 }
 
 #chat-header {
@@ -700,6 +705,7 @@ html {
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s ease, background-color 0.2s ease;
+    cursor: url("../img/cur/input-cur.png"), auto;
 }
 
 #chat-input:focus {

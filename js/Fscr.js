@@ -1472,18 +1472,20 @@ dragElement(document.getElementById("chat-container"));
 function dragElement(elmnt) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    // Use a handle for dragging (chat header or toggle)
     const handle = document.getElementById(elmnt.id + "chat-toggle") || elmnt;
     handle.onmousedown = dragMouseDown;
 
     function dragMouseDown(e) {
-        // Ignore clicks on input fields or buttons
         const tag = e.target.tagName.toUpperCase();
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
 
         e.preventDefault();
         pos3 = e.clientX;
         pos4 = e.clientY;
+
+        // Add dragging class
+        elmnt.classList.add("dragging");
+
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
     }
@@ -1501,6 +1503,9 @@ function dragElement(elmnt) {
     function closeDragElement() {
         document.onmouseup = null;
         document.onmousemove = null;
+
+        // Remove dragging class
+        elmnt.classList.remove("dragging");
     }
 }
 
