@@ -88,7 +88,9 @@ flowchart TD
 - **Planet Merge Logic**: Rules for combining celestial bodies.  
 - **Score / Progression**: Tracks points, largest planet, and game state.  
 - **Leaderboard Display**: Shows top scores in real-time (Firebase).  
-- **UI Overlay**: Chat box, player counter, and control buttons.  
+- **UI Overlay**: Chat box, player counter, and control buttons.
+  
+[edit](https://excalidraw.com/#json=Nmvb81HdAXo1kWOfbW7Um,Zhe1-btf65rQIpKb-SL61A)
 
 ---
 
