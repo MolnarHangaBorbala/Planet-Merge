@@ -43,12 +43,27 @@
         <button id="toggle-physics">
             <span id="physicT"></span>
         </button>
+        <button id="change-name-btn" onclick="setPlayerName(), playSCSFX()">
+            <span id="change-name-text">Change Name</span>
+        </button>
         <div class="tooltip">
             <button id="delete-s-planets" class="disabled" onclick="DISABLE()">
                 <span id="deleteT">Delete</span>
                 <span class="tooltiptext">Removes all Ceres, Vesta, and Pallas planets (first three stages). <br> <b>
                         Unlocked with Solara. </b></span>
             </button>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-header">
+            <h3 id="chat-title">Global Chat</h3>
+            <button id="chat-toggle">−</button>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200">
+            <button id="chat-send">Send</button>
         </div>
     </div>
 
@@ -78,6 +93,11 @@
                 <div class="bar"></div>
             </div>
         </div>
+    </div>
+
+    <div id="chat-icon-div" onclick="playSCSFX()">
+        <div id="chat-notification">0</div>
+        <img id="chat-icon" src="../img/comment.png" alt="comment icon">
     </div>
 
     <audio id="game-over-sfx" src="../sfx/game-over.mp3" preload="auto"></audio>

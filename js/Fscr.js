@@ -1105,6 +1105,10 @@ window.addEventListener("load", updateLeaderboardDisplay);
 
 // -------------------- FIREBASE LEADERBOARD----------------------
 
+function getPlayerName(defaultName = "Player") {
+    return localStorage.getItem("playerName") || defaultName;
+}
+
 async function saveScoreToLeaderboard(score) {
     if (!isFirebaseInitialized) {
         console.log('Firebase not available, using local storage');
@@ -1113,11 +1117,7 @@ async function saveScoreToLeaderboard(score) {
     }
 
     try {
-        const lastPlayerName = localStorage.getItem('playerName') || "Player";
-        const name = prompt("Enter your name:", lastPlayerName) || lastPlayerName;
-
-        // Save the name for next time
-        localStorage.setItem('playerName', name);
+        const name = getPlayerName();
 
         const header = document.querySelector('#leaderboard-div h3');
         if (header) header.textContent = 'Submitting Score...';
@@ -1133,7 +1133,6 @@ async function saveScoreToLeaderboard(score) {
         await database.ref(refName).push(scoreData);
 
         console.log(`Score submitted to ${refName}!`);
-
         setTimeout(() => updateLeaderboardDisplay(), 1000);
 
     } catch (error) {
@@ -1150,7 +1149,7 @@ function saveScoreToLocalLeaderboard(score) {
     const key = currentGameMode === "arcade" ? "planetLeaderboard_arcade" : "planetLeaderboard_realistic";
     let leaderboard = JSON.parse(localStorage.getItem(key) || "[]");
 
-    const name = prompt("Enter your name:", "Player") || "Player";
+    const name = getPlayerName();
 
     leaderboard.push({
         name: name + " (Local)",
@@ -1424,16 +1423,25 @@ function playerJoin() {
     if (hasJoined) return; // Prevent multiple joins in same session
 
     currentPlayerRef = playersRef.child(playerId);
-    currentPlayerRef.set({ joinedAt: firebase.database.ServerValue.TIMESTAMP })
-        .catch((err) => console.error('Error setting active player:', err));
-    currentPlayerRef.onDisconnect().remove();
 
-    // Only increment if this is a new session
-    playerCountRef.transaction((current) => (current || 0) + 1)
-        .then(() => {
-            hasJoined = true; // Mark as joined
-        })
-        .catch((err) => console.error('Transaction error:', err));
+    currentPlayerRef.once('value').then(snapshot => {
+        const isNew = !snapshot.exists();
+
+        // Set player as active
+        currentPlayerRef.set({ joinedAt: firebase.database.ServerValue.TIMESTAMP })
+            .catch(err => console.error('Error setting active player:', err));
+
+        currentPlayerRef.onDisconnect().remove();
+
+        if (isNew) {
+            // Only increment if this is a new player
+            playerCountRef.transaction(current => (current || 0) + 1)
+                .then(() => { hasJoined = true; })
+                .catch(err => console.error('Transaction error:', err));
+        } else {
+            hasJoined = true;
+        }
+    }).catch(err => console.error('Error checking existing player:', err));
 }
 
 function playerLeave() {
@@ -1455,4 +1463,466 @@ window.addEventListener('beforeunload', () => {
 // ------------------ reset count ------------------
 function resetPlayerCount() {
     firebase.database().ref('playerCount').set(0);
+}
+
+// ------------------ GLOBAL CHAT ------------------
+// ------------------- DRAG ------------------
+dragElement(document.getElementById("chat-container"));
+
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    // Use a handle for dragging (chat header or toggle)
+    const handle = document.getElementById(elmnt.id + "chat-toggle") || elmnt;
+    handle.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        // Ignore clicks on input fields or buttons
+        const tag = e.target.tagName.toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
+
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
+// ------------------- CHAT ------------------
+this.isMinimized = true;
+var date = new Date();
+const notification = document.getElementById('chat-notification');
+notification.style.display = 'none';
+class GlobalChat {
+    constructor() {
+        this.isMinimized = false;
+        this.unreadCount = 0;
+        this.playerName = localStorage.getItem('playerName') || 'Anonymous';
+        this.playerId = this.getPlayerId();
+        this.messagesRef = null;
+        this.onlinePlayersRef = null;
+        this.messageLimit = 50; // Keep last 50 messages
+        this.rateLimitDelay = 2000; // 2 seconds between messages
+        this.lastMessageTime = 0;
+
+        this.init();
+    }
+
+    getPlayerId() {
+        let id = localStorage.getItem('chatPlayerId');
+        if (!id) {
+            id = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('chatPlayerId', id);
+        }
+        return id;
+    }
+
+    init() {
+        this.setupEventListeners();
+
+        if (isFirebaseInitialized) {
+            this.initializeFirebaseChat();
+        } else {
+            console.warn('Firebase not initialized, chat will not work');
+        }
+    }
+
+    setupEventListeners() {
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatIconDiv = document.getElementById('chat-icon-div');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+
+        chatToggle.addEventListener('click', () => this.toggleChat());
+        chatIconDiv.addEventListener('click', () => this.toggleChat());
+        chatSend.addEventListener('click', () => this.sendMessage());
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendMessage();
+        });
+
+        // Clear notifications when chat is opened
+        const chatContainer = document.getElementById('chat-container');
+        chatContainer.addEventListener('click', () => {
+            if (!this.isMinimized) {
+                this.clearNotifications();
+            }
+        });
+    }
+
+    initializeFirebaseChat() {
+        this.messagesRef = database.ref('globalChat/messages');
+        this.onlinePlayersRef = database.ref('globalChat/onlinePlayers');
+
+        // Listen for new messages
+        this.messagesRef.limitToLast(this.messageLimit).on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            this.displayMessage(message);
+
+            if (this.isMinimized && message.playerId !== this.playerId) {
+                this.showNotification();
+            }
+        });
+
+        // Join the chat
+        this.joinChat();
+
+        // Initial cleanup on load
+        this.cleanMessages();
+
+        // Set automatic cleanup every hour
+        setInterval(() => this.cleanMessages(), 60 * 60 * 1000);;
+
+        // Leave chat when page unloads
+        window.addEventListener('beforeunload', () => this.leaveChat());
+    }
+
+    // ------------------ CLEAN MESSAGES ------------------
+    async cleanMessages() {
+        if (!this.messagesRef || !this.onlinePlayersRef) return;
+
+        try {
+            // Get currently online users
+            const onlineSnapshot = await this.onlinePlayersRef.once('value');
+            const onlineUsers = Object.values(onlineSnapshot.val() || {}).map(u => u.name);
+
+            const messagesSnapshot = await this.messagesRef.once('value');
+            const updates = {};
+
+            messagesSnapshot.forEach((child) => {
+                const msg = child.val();
+
+                const msgAge = Date.now() - (msg.timestamp || Date.now());
+                const isOld = msgAge > 24 * 60 * 60 * 1000; // 24h
+                const isInvalidUser = msg.playerId !== 'system' && !onlineUsers.includes(msg.username);
+
+                if (isOld || isInvalidUser) {
+                    updates[child.key] = null;
+                }
+            });
+
+            if (Object.keys(updates).length > 0) {
+                await this.messagesRef.update(updates);
+                console.log(`Cleaned ${Object.keys(updates).length} old/invalid messages.`);
+            }
+        } catch (error) {
+            console.error('Error cleaning messages:', error);
+        }
+    }
+
+    joinChat() {
+        if (!this.onlinePlayersRef) return;
+
+        const playerRef = this.onlinePlayersRef.child(this.playerId);
+        playerRef.set({
+            name: this.playerName,
+            joinedAt: firebase.database.ServerValue.TIMESTAMP,
+            lastSeen: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // Remove player when they disconnect
+        playerRef.onDisconnect().remove();
+
+        // Send join message
+        this.sendSystemMessage(`${this.playerName} joined the chat`);
+    }
+
+    leaveChat() {
+        if (!this.onlinePlayersRef) return;
+
+        // Send leave message before removing
+        this.sendSystemMessage(`${this.playerName} left the chat`);
+
+        const playerRef = this.onlinePlayersRef.child(this.playerId);
+        playerRef.remove();
+    }
+
+    sendSystemMessage(text) {
+        if (!this.messagesRef) return;
+
+        const messageData = {
+            text: text,
+            username: 'System',
+            playerId: 'system',
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            type: 'system'
+        };
+
+        this.messagesRef.push(messageData).catch((error) => {
+            console.error('Error sending system message:', error);
+        });
+    }
+
+    displayMessage(message) {
+        const messagesContainer = document.getElementById('chat-messages');
+        if (!messagesContainer) return;
+
+        const ts = typeof message.timestamp === 'number' ? message.timestamp : Date.now();
+        const timestamp = new Date(ts).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${message.type === 'system' ? 'system-message' : ''}`;
+
+        const isOwnMessage = message.playerId === this.playerId;
+        const usernameClass = message.type === 'system' ? 'username' :
+            (isOwnMessage ? 'username online' : 'username offline');
+
+        messageDiv.innerHTML = `
+            <span class="${usernameClass}">${this.escapeHtml(message.username)}:</span>
+            <span class="message-text">${this.escapeHtml(message.text)}</span>
+            <span class="timestamp">${timestamp}</span>
+        `;
+
+        messagesContainer.appendChild(messageDiv);
+
+        // Limit messages in DOM
+        while (messagesContainer.children.length > this.messageLimit) {
+            messagesContainer.removeChild(messagesContainer.firstChild);
+        }
+
+        // Auto scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+
+        if (!message || !this.messagesRef) return;
+
+        // Limit message length
+        if (message.length > 300) {
+            this.showTempMessage('Message too long (max 300 chars)', 'error');
+            return;
+        }
+
+        // Rate limiting
+        const now = Date.now();
+        if (now - this.lastMessageTime < this.rateLimitDelay) {
+            this.showTempMessage('Please wait before sending another message', 'error');
+            return;
+        }
+
+        this.lastMessageTime = now;
+
+        // Build the message object
+        const messageData = {
+            text: message,
+            username: this.playerName,
+            playerId: this.playerId,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            type: 'user'
+        };
+
+        // Push to Firebase
+        this.messagesRef.push(messageData).then(() => {
+            input.value = ""; // clear input after sending
+        }).catch((error) => {
+            console.error("Error sending message:", error);
+            this.showTempMessage("Failed to send message", "error");
+        });
+    }
+
+    showTempMessage(text, type = 'info') {
+        const tempMessage = {
+            text: text,
+            username: 'Info',
+            playerId: 'temp',
+            timestamp: Date.now(),
+            type: type === 'error' ? 'system' : 'system'
+        };
+
+        this.displayMessage(tempMessage);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messages = messagesContainer.querySelectorAll('.chat-message');
+            const lastMessage = messages[messages.length - 1];
+            if (lastMessage && lastMessage.textContent.includes(text)) {
+                lastMessage.remove();
+            }
+        }, 3000);
+    }
+
+    toggleChat() {
+        const container = document.getElementById('chat-container');
+
+        this.isMinimized = !this.isMinimized;
+
+        if (this.isMinimized) {
+            container.style.display = 'none';
+            this.isMinimized = true;
+        } else {
+            container.style.display = 'flex';
+            this.isMinimized = false;
+        }
+
+        // Play sound effect
+        if (typeof playSCSFX === 'function') {
+            playSCSFX();
+        }
+    }
+
+    showNotification() {
+        if (this.isMinimized) {
+            this.unreadCount++;
+            const notification = document.getElementById('chat-notification');
+            notification.textContent = this.unreadCount;
+            notification.style.display = 'flex';
+        }
+    }
+
+    clearNotifications() {
+        this.unreadCount = 0;
+        const notification = document.getElementById('chat-notification');
+        notification.style.display = 'none';
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Public method to update player name when it changes
+    updatePlayerName(newName) {
+        const oldName = this.playerName;
+        this.playerName = newName;
+
+        // Update in Firebase
+        if (this.onlinePlayersRef) {
+            this.onlinePlayersRef.child(this.playerId).update({
+                name: newName,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        // Send name change message
+        if (oldName !== newName && oldName !== 'Anonymous') {
+            this.sendSystemMessage(`${oldName} changed their name to ${newName}`);
+        }
+    }
+
+    // Clean old messages periodically (call this once per session)
+    cleanOldMessages() {
+        if (!this.messagesRef) return;
+
+        const cutoffTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
+
+        this.messagesRef.orderByChild('timestamp')
+            .endAt(cutoffTime)
+            .once('value', (snapshot) => {
+                const updates = {};
+                snapshot.forEach((child) => {
+                    updates[child.key] = null;
+                });
+
+                if (Object.keys(updates).length > 0) {
+                    this.messagesRef.update(updates);
+                }
+            });
+    }
+}
+
+// Initialize the chat system
+let globalChat;
+
+function resetChat() {
+    if (!isFirebaseInitialized) {
+        console.warn("Firebase not initialized, cannot reset chat.");
+        return;
+    }
+
+    const messagesRef = firebase.database().ref('globalChat/messages');
+
+    if (!messagesRef) {
+        console.error("Messages reference not found.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to clear all chat messages?")) {
+        messagesRef.remove()
+            .then(() => {
+                console.log("Chat messages cleared successfully.");
+                alert("Chat cleared!");
+            })
+            .catch(err => {
+                console.error("Error clearing chat messages:", err);
+                alert("Failed to clear chat. Check console for details.");
+            });
+    }
+}
+
+// Wait for Firebase to be ready
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (isFirebaseInitialized) {
+            globalChat = new GlobalChat();
+
+            // Clean old messages once per session
+            if (Math.random() < 0.1) { // 10% chance to run cleanup
+                globalChat.cleanOldMessages();
+            }
+        }
+    }, 2000);
+});
+
+// Update chat player name when leaderboard name changes
+const originalSaveScore = saveScoreToLeaderboard;
+saveScoreToLeaderboard = async function (score) {
+    const result = await originalSaveScore(score);
+
+    // Update chat name if it changed
+    if (globalChat) {
+        const newName = localStorage.getItem('playerName') || 'Anonymous';
+        globalChat.updatePlayerName(newName);
+    }
+
+    return result;
+};
+
+// Export for external use
+window.GlobalChat = GlobalChat;
+
+// ------------------ CHANGE PLAYER NAME ------------------
+function setPlayerName() {
+    const currentName = localStorage.getItem("playerName") || "Player";
+    const newName = prompt("Enter your name:", currentName);
+    if (newName) {
+        localStorage.setItem("playerName", newName);
+
+        // Wait until globalChat exists
+        if (window.globalChat && typeof globalChat.updatePlayerName === "function") {
+            globalChat.updatePlayerName(newName);
+        } else {
+            // If chat not initialized yet, try again in 1 second
+            const interval = setInterval(() => {
+                if (window.globalChat && typeof globalChat.updatePlayerName === "function") {
+                    globalChat.updatePlayerName(newName);
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        alert(`Your name is now set to: ${newName}`);
+    }
 }
