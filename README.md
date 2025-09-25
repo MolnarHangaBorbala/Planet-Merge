@@ -18,16 +18,57 @@
 
 **Planet Merge** is a visually stunning space-themed puzzle game that combines realistic physics with cosmic progression. Start with humble asteroids and work your way up through planets, stars, and beyond to reach the ultimate goal—creating a black hole! Each merge brings you closer to mastering the cosmos.
 
+---
+
 ## ✨ Key Features
 
-🌟 **Animated Starfield** - Dynamic twinkling background creates an authentic space atmosphere  
-⚡ **Physics Engine** - Realistic collisions and merges powered by [Matter.js](https://brm.io/matter-js/)  
-🌍 **Progression System** - Evolve from asteroids → planets → stars → black holes  
-🛸 **UFO Overlay** - Futuristic tractor beam guides your next strategic move  
-🎮 **Dual Game Modes** - Switch between Arcade and Realistic physics modes  
-🏆 **Global Leaderboard** - Compete worldwide with [Firebase](https://firebase.google.com/) integration that remembers your name  
-🔍 **Zoom Controls** - Press `Ctrl + scroll wheel` to zoom in/out for optimal gameplay perspective  
-👥 **Player Counter**: - Online player's number shown in realtime 
+🌟 **Animated Starfield** – Dynamic twinkling background creates an authentic space atmosphere  
+⚡ **Physics Engine** – Realistic collisions and merges powered by [Matter.js](https://brm.io/matter-js/)  
+🌍 **Progression System** – Evolve from asteroids → planets → stars → black holes  
+🛸 **UFO Overlay** – Futuristic tractor beam guides your next strategic move  
+🎮 **Dual Game Modes** – Switch between Arcade and Realistic physics modes  
+💬 **Global Chat** – Chat in real-time with other players using [Firebase](https://firebase.google.com/)  
+🏆 **Global Leaderboard** – Compete worldwide and keep your name remembered using [Firebase](https://firebase.google.com/)   
+🔍 **Zoom Controls** – Press `Ctrl + scroll wheel` to zoom in/out for optimal gameplay perspective  
+👥 **Player Counter** – See online players in real-time  
+
+---
+
+## 💬 Chat System
+
+The game includes a **real-time global chat**, allowing players to communicate and strategize during gameplay:
+
+- **Firebase-powered** – messages are stored in real-time and synchronized for all players  
+- **Minimizable window** – you can collapse the chat to save screen space
+- **Moveable** - you can move the chat window around to read messages while playing
+- **Notifications** – unread messages are highlighted when the chat is minimized  
+- **Rate-limited messages** – prevents spam by limiting message frequency  
+- **Name management** – players can set or change their display name, which is shown in chat  
+
+---
+
+## 🛠️ Game Structure Diagram
+
+```mermaid
+flowchart LR
+    A[Game Canvas] --> B[Physics Engine / Matter.js]
+    B --> C[Planet Merge Logic]
+    C --> D[Score / Progression]
+    D --> E[Leaderboard Display]
+    A --> F[UI Overlay]
+    F --> G[Chat Box]
+    F --> H[Player Counter]
+    F --> I[Controls / Buttons]
+```
+
+- **Game Canvas**: The main area where planets are dropped and merged.  
+- **Physics Engine / Matter.js**: Handles collisions, merges, and movement.  
+- **Planet Merge Logic**: Rules for combining celestial bodies.  
+- **Score / Progression**: Tracks points, largest planet, and game state.  
+- **Leaderboard Display**: Shows top scores in real-time (Firebase).  
+- **UI Overlay**: Chat box, player counter, and control buttons.  
+
+---
 
 ## 🚀 Quick Start
 
@@ -42,8 +83,10 @@ cd planet-merge
 
 # Open in your browser
 open index.html
-# or simply double-click index.html
+# or double-click index.html
 ```
+
+---
 
 ## 🗂️ Project Structure
 
@@ -52,10 +95,10 @@ planet-merge/
 ├── 📄 index.html              # Main landing page
 ├── 📄 README.md               # Project documentation
 ├── 📁 css/
-│   ├── 🎨 Fstyle.css         # Game styling
-│   └── 🎨 index.css          # Landing page styling
+│   ├── 🎨 Fstyle.css          # Game styling
+│   └── 🎨 index.css           # Landing page styling
 ├── 📁 html/
-│   └── 🎮 Fgame.html         # Main game interface
+│   └── 🎮 Fgame.html          # Main game interface
 ├── 📁 img/
 │   └── 🪐 icons8-planet-32.png # Game icon
 └── 📁 js/
@@ -63,10 +106,12 @@ planet-merge/
 ```
 
 ### 🔧 Core Components
-- **Game Engine**: [`js/Fscr.js`](js/Fscr.js) - All game logic, physics, and interactions
-- **UI Templates**: [`index.html`](index.html) & [`html/Fgame.html`](html/Fgame.html) - User interface
-- **Styling**: [`css/Fstyle.css`](css/Fstyle.css) & [`css/index.css`](css/index.css) - Visual design
-- **Assets**: [`img/icons8-planet-32.png`](img/icons8-planet-32.png) - Game graphics
+- **Game Engine**: [`js/Fscr.js`](js/Fscr.js) – Game logic, physics, chat, and interactions  
+- **UI Templates**: [`index.html`](index.html) & [`html/Fgame.html`](html/Fgame.html) – User interface  
+- **Styling**: [`css/Fstyle.css`](css/Fstyle.css) & [`css/index.css`](css/index.css) – Visual design  
+- **Assets**: [`img/icons8-planet-32.png`](img/icons8-planet-32.png) – Game graphics  
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -78,38 +123,44 @@ planet-merge/
 | **Matter.js** | Realistic physics simulation |
 | **CSS3 Animations** | Smooth UI transitions |
 | **Vanilla JavaScript** | Game logic and interactions |
-| **Firebase** | Real-time leaderboard database |
+| **Firebase** | Real-time leaderboard & chat database |
 | **Netlify** | Deployment and hosting |
 
 </div>
 
+---
+
 ## 🎮 How to Play
 
-1. **Drop Planets**: Click to drop celestial bodies into the play area
-2. **Merge Strategy**: Combine identical objects to create larger ones
-3. **Manage Space**: Use the UFO's tractor beam to guide placement
-4. **Evolve**: Progress from asteroids → planets → stars → black holes
-5. **Compete**: Submit your high scores to the global leaderboard
+1. **Drop Planets** – Click to drop celestial bodies into the play area  
+2. **Merge Strategy** – Combine identical objects to create larger ones  
+3. **Manage Space** – Use the UFO's tractor beam to guide placement  
+4. **Evolve** – Progress from asteroids → planets → stars → black holes  
+5. **Chat & Compete** – Communicate with other players and submit your high scores  
+
+---
 
 ## 🗓️ Development Roadmap
 
 ### ✅ Completed
-- [x] **Power-Up System**: DELETE button (deletes first 3 planets) unlocks at Solara
-- [x] **Visual Polish**: Fixed planet selection indicators (now hot pink)
-- [x] **Stackable Abilities**: Made delete ultimate stackable for strategic gameplay
+- [x] **Power-Up System** – DELETE button (deletes first 3 planets) unlocks at Solara  
+- [x] **Visual Polish** – Fixed planet selection indicators (now hot pink)  
+- [x] **Stackable Abilities** – Delete ultimate stackable for strategy  
 
 ### 🔄 In Progress
-- [ ] **Balance Update**: Implement maximum delete uses limit (396)
-- [ ] **Performance**: Optimize physics calculations for larger merges
-- [ ] **Mobile Support**: Touch controls and responsive design
+- [ ] **Balance Update** – Limit maximum delete uses  
+- [ ] **Performance** – Optimize physics calculations for larger merges  
+- [ ] **Mobile Support** – Touch controls & responsive UI  
 
 ### 💭 Future Ideas
-- **Visual Effects**: Particle systems for merges and special events
-- **Achievements**: Unlock system for reaching specific milestones
-- **Multiplayer**: Real-time competitive merging battles
+- **Visual Effects** – Particle systems for merges and events  
+- **Achievements** – Milestone unlocks  
+- **Multiplayer** – Real-time competitive merging battles  
+
+---
 
 ## 🌟 Alternative Names Considered
-*Planet Merge* • *Cosmic Fusion* • *Stellar Merge* • *Orbit Overlap* • *Celestial Merge* • *AstroMerge* • *Planetary Puzzle* • *Merge the Cosmos* • *Galactic Merge* • *Solar Synthesis* • *Nebula Merge* • *Gravity Merge* • *Planet Stackers* • *Stellar Stack* • *Astro Alchemy*
+*Planet Merge* • *Cosmic Fusion* • *Stellar Merge* • *Orbit Overlap* • *Celestial Merge* • *AstroMerge* • *Planetary Puzzle* • *Merge the Cosmos* • *Galactic Merge* • *Solar Synthesis* • *Nebula Merge* • *Gravity Merge* • *Planet Stackers* • *Stellar Stack* • *Astro Alchemy*  
 
 ---
 
