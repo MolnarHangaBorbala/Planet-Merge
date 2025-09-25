@@ -571,6 +571,7 @@ html {
     padding: 10px;
     height: 42px;
     width: 46px;
+    cursor: url("../img/cur/tile_0097.png"), auto;
 }
 
 #chat-icon {
