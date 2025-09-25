@@ -50,15 +50,37 @@ The game includes a **real-time global chat**, allowing players to communicate a
 ## 🛠️ Game Structure Diagram
 
 ```mermaid
-flowchart LR
-    A[Game Canvas] --> B[Physics Engine / Matter.js]
-    B --> C[Planet Merge Logic]
-    C --> D[Score / Progression]
-    D --> E[Leaderboard Display]
-    A --> F[UI Overlay]
-    F --> G[Chat Box]
-    F --> H[Player Counter]
-    F --> I[Controls / Buttons]
+flowchart TD
+    A[Game Page: Fgame.html] --> B[Stars Canvas: Background]
+    A --> C[Game Container: Overlay Canvas]
+    A --> D[Planet Size Box: Planet Preview Canvas]
+    A --> E[Score Div: Display Score]
+    A --> F[Leaderboard Div: Leaderboard List]
+    A --> G[Preview Container: Next Planet + Buttons]
+    A --> H[Chat Container: Messages + Input + Send Button]
+    A --> I[Player Counter: Online Players]
+    A --> J[Sound Controls]
+    
+    %% Chat flow
+    H --> H1[Chat Input]
+    H --> H2[Chat Send Button]
+    H --> H3[Chat Toggle Button]
+    H1 --> K[GlobalChat.js]
+    H2 --> K
+    H3 --> K
+    
+    %% Leaderboard flow
+    F --> L[Firebase / Local Storage]
+    L --> F
+    
+    %% Game logic
+    C --> M[Fscr.js: Game Engine & Physics]
+    D --> M
+    G --> M
+    E --> M
+    I --> N[Firebase: Active Players]
+    J --> M
+
 ```
 
 - **Game Canvas**: The main area where planets are dropped and merged.  
