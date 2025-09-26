@@ -375,16 +375,17 @@ html {
 
 /* DELETE BUTTON */
 /* Tooltip container */
-.tooltip {
+.tooltip,
+.tooltip1 {
     position: relative;
     display: inline-block;
 }
 
 /* Tooltip text */
-.tooltiptext {
+.tooltiptext,
+.tooltiptext1 {
     border: 1px solid rgb(150, 150, 150);
     visibility: hidden;
-    width: 260px;
     background: rgba(0, 0, 0, 0.92);
     color: #fff;
     text-align: center;
@@ -392,9 +393,8 @@ html {
     padding: 8px 12px;
     position: absolute;
     z-index: 100;
-    top: 120%;
+
     left: 50%;
-    transform: translateX(-50%);
     opacity: 0;
     font-size: 15px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -402,8 +402,23 @@ html {
     pointer-events: none;
 }
 
+.tooltiptext1 {
+    font-size: 10px;
+    width: 170px;
+    transform: translateX(60%);
+    top: 0%;
+}
+
+.tooltiptext {
+    transform: translateX(-50%);
+    width: 260px;
+    top: 120%;
+}
+
 .tooltip:hover .tooltiptext,
-.tooltip:focus-within .tooltiptext {
+.tooltip:focus-within .tooltiptext,
+.tooltip1:hover .tooltiptext1,
+.tooltip1:focus-within .tooltiptext1 {
     visibility: visible;
     opacity: 1;
 }
@@ -414,17 +429,53 @@ html {
     display: none;
 }
 
+/* ORGANIZE ICON */
+.organize-container {
+    position: absolute;
+    bottom: 95px;
+    left: 19px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.068);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    z-index: 1000;
+    cursor: url("../img/cur/tile_0097.png"), auto;
+}
+
+#organize-icon {
+    width: 40px;
+    height: 40px;
+    opacity: 0.5;
+    padding: 5px;
+}
+
+.organize-container:hover #organize-icon {
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
 /* PLAYERS ONLINE */
 #player-counter {
     color: white;
     position: absolute;
-    bottom: 100px;
-    left: 18px;
+    bottom: 95px;
+    left: 80px;
     font-size: 16px;
     padding: 5px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.068);
     border: 2px solid rgba(255, 255, 255, 0.1);
+    cursor: url("../img/cur/tile_0097.png"), auto;
+}
+
+#players-online-text {
+    opacity: 0.5;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#player-counter:hover #players-online-text {
+    opacity: 1;
 }
 
 /* SOUND */
@@ -447,11 +498,6 @@ html {
     padding-left: 5px;
     background-color: rgba(255, 255, 255, 0.07);
     border-radius: 10px;
-}
-
-#sound-container:hover #sound-div {
-    background-color: rgba(255, 255, 255, 0.13);
-    transition: background-color 0.2s ease-in-out;
 }
 
 #sound-container:hover #sound-icon,
@@ -594,6 +640,56 @@ html {
     transition: opacity 0.2s ease-in-out;
 }
 
+/* ONLINE PLAYERS CONTAINER */
+#players-container {
+    position: absolute;
+    left: 368px;
+    top: 20px;
+    width: 280px;
+    height: 390px;
+    background: rgba(255, 255, 255, 0.068);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    z-index: 1000;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    cursor: url("../img/cur/move.png"), auto;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#players-container.show {
+    opacity: 1;
+}
+
+.player-name {
+    color: #2bc94d;
+    font-size: 16px;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.212);
+    display: flex;
+}
+
+.player-name:first-child {
+    border-top: 1px solid rgba(255, 255, 255, 0.212);
+    border-radius: 8px 8px 0 0;
+}
+
+.player-name:nth-child(odd) {
+    background: rgba(88, 88, 88, 0.2);
+}
+
+.player-name:nth-child(even) {
+    background: rgba(36, 36, 36, 0.2);
+}
+
+.player-name::before {
+    content: "●";
+    color: #22a03d;
+    margin-right: 4px;
+    font-size: 16px;
+}
+
 /* GLOBAL CHAT CONTAINER */
 #chat-container {
     position: absolute;
@@ -607,15 +703,22 @@ html {
     z-index: 1000;
     flex-direction: column;
     overflow: hidden;
-    display: none;
+    opacity: 0;
     cursor: url("../img/cur/move.png"), auto;
+    transition: opacity 0.2s ease-in-out;
 }
 
-#chat-container.dragging {
+#chat-container.show {
+    opacity: 1;
+}
+
+#chat-container.dragging,
+#players-container.dragging {
     cursor: url("../img/cur/movefull.png"), move;
 }
 
-#chat-header {
+#chat-header,
+#players-header {
     background: rgb(0, 0, 0);
     height: 45px;
     border-radius: 12px 12px 0 0;
@@ -626,14 +729,16 @@ html {
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-#chat-title {
+#chat-title,
+#players-title {
     color: aliceblue;
     font-size: 18px;
     font-weight: bold;
     margin: 0;
 }
 
-#chat-toggle {
+#chat-toggle,
+#players-toggle {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.7);
@@ -643,11 +748,13 @@ html {
     transition: color 0.2s ease;
 }
 
-#chat-toggle:hover {
+#chat-toggle:hover,
+#players-toggle:hover {
     color: white;
 }
 
-#chat-messages {
+#chat-messages,
+#players-online-list {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
@@ -747,10 +854,6 @@ html {
     cursor: not-allowed;
 }
 
-.chat-minimized {
-    height: 45px !important;
-}
-
 .chat-minimized #chat-messages,
 .chat-minimized #chat-input-container {
     display: none;
@@ -818,7 +921,6 @@ html {
 /* CHANGE NAME BUTTON */
 #change-name-div {
     position: absolute;
-
     text-align: center;
     z-index: 1000;
 }

@@ -1251,7 +1251,7 @@ function displayLeaderboard(leaderboard, isLocal = false) {
     leaderboard.forEach((entry, idx) => {
         const li = document.createElement("li");
 
-        const displayName = entry.name || 'Anonymous';
+        const displayName = entry.name || 'Player';
         li.textContent = `${idx + 1}. ${displayName} — ${entry.score.toLocaleString()} pts`;
 
         // Tooltip
@@ -1395,16 +1395,16 @@ let currentPlayerRef = null;
 const PLAYER_ID_KEY = 'playerId';
 
 function updatePlayerCounter(count) {
-    const counterEl = document.getElementById('player-counter');
+    const counterEl = document.getElementById('players-online-text');
     if (counterEl) {
-        counterEl.textContent = `Players Online: ${count}`;
+        counterEl.textContent = `👥 Players Online: ${count}`;
     }
 }
 
-// Firebase listener
-playerCountRef.on('value', (snapshot) => {
-    const count = snapshot.val() || 0;
-    updatePlayerCounter(count);
+playersRef.on('value', (snapshot) => {
+    const players = snapshot.val() || {};
+    const count = Object.keys(players).length;
+    updatePlayerCounter(count, players);
 });
 
 function getPlayerId() {
@@ -1420,21 +1420,22 @@ const playerId = getPlayerId();
 let hasJoined = false; // Ensure join only once per session
 
 function playerJoin() {
-    if (hasJoined) return; // Prevent multiple joins in same session
+    if (hasJoined) return;
 
+    const playerName = localStorage.getItem("playerName") || "Player";
     currentPlayerRef = playersRef.child(playerId);
 
     currentPlayerRef.once('value').then(snapshot => {
         const isNew = !snapshot.exists();
 
-        // Set player as active
-        currentPlayerRef.set({ joinedAt: firebase.database.ServerValue.TIMESTAMP })
-            .catch(err => console.error('Error setting active player:', err));
+        currentPlayerRef.set({
+            name: playerName, // <-- store name here
+            joinedAt: firebase.database.ServerValue.TIMESTAMP
+        }).catch(err => console.error('Error setting active player:', err));
 
         currentPlayerRef.onDisconnect().remove();
 
         if (isNew) {
-            // Only increment if this is a new player
             playerCountRef.transaction(current => (current || 0) + 1)
                 .then(() => { hasJoined = true; })
                 .catch(err => console.error('Transaction error:', err));
@@ -1463,6 +1464,49 @@ window.addEventListener('beforeunload', () => {
 // ------------------ reset count ------------------
 function resetPlayerCount() {
     firebase.database().ref('playerCount').set(0);
+}
+
+// ------------------ DRAG PLAYERS ONLINE ------------------
+dragElement(document.getElementById("players-container"));
+
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    const handle = document.getElementById(elmnt.id + "players-toggle") || elmnt;
+    handle.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        const tag = e.target.tagName.toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
+
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // Add dragging class
+        elmnt.classList.add("dragging");
+
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+
+        // Remove dragging class
+        elmnt.classList.remove("dragging");
+    }
 }
 
 // ------------------ GLOBAL CHAT ------------------
@@ -1518,7 +1562,7 @@ class GlobalChat {
     constructor() {
         this.isMinimized = false;
         this.unreadCount = 0;
-        this.playerName = localStorage.getItem('playerName') || 'Anonymous';
+        this.playerName = localStorage.getItem('playerName') || 'Player';
         this.playerId = this.getPlayerId();
         this.messagesRef = null;
         this.onlinePlayersRef = null;
@@ -1651,6 +1695,7 @@ class GlobalChat {
         if (!this.onlinePlayersRef) return;
 
         const playerRef = this.onlinePlayersRef.child(this.playerId);
+        this.sendSystemMessage(`${this.playerName} left the chat`);
         playerRef.remove();
     }
 
@@ -1768,20 +1813,26 @@ class GlobalChat {
     toggleChat() {
         const container = document.getElementById('chat-container');
 
-        this.isMinimized = !this.isMinimized;
+        if (!this.isMinimized) {
 
-        if (this.isMinimized) {
-            container.style.display = 'none';
+            container.classList.remove('show');
+            container.addEventListener('transitionend', function hideAfterTransition() {
+                if (!container.classList.contains('show')) {
+                    container.style.display = 'none';
+                }
+                container.removeEventListener('transitionend', hideAfterTransition);
+            });
             this.isMinimized = true;
         } else {
+
             container.style.display = 'flex';
+            requestAnimationFrame(() => {
+                container.classList.add('show');
+            });
             this.isMinimized = false;
         }
 
-        // Play sound effect
-        if (typeof playSCSFX === 'function') {
-            playSCSFX();
-        }
+        if (typeof playSCSFX === 'function') playSCSFX();
     }
 
     showNotification() {
@@ -1819,7 +1870,7 @@ class GlobalChat {
         }
 
         // Send name change system message
-        if (oldName !== newName && oldName !== 'Anonymous') {
+        if (oldName !== newName && oldName !== 'Player') {
             this.sendSystemMessage(`${oldName} changed their name to ${newName}`);
         }
     }
@@ -1900,7 +1951,7 @@ saveScoreToLeaderboard = async function (score) {
 
     // Update chat name if it changed
     if (globalChat) {
-        const newName = localStorage.getItem('playerName') || 'Anonymous';
+        const newName = localStorage.getItem('playerName') || 'Player';
         globalChat.updatePlayerName(newName);
     }
 
@@ -1943,3 +1994,71 @@ window.addEventListener("DOMContentLoaded", () => {
         span.textContent = savedName;
     }
 });
+
+// ------------------ ONLINE PLAYERS LIST ------------------
+const playersContainer = document.getElementById('players-container');
+const playersToggleBtn = document.getElementById('players-toggle');
+const playersList = document.getElementById('players-online-list');
+const playerCounterText = document.getElementById('players-online-text');
+
+playersContainer.style.display = 'none';
+
+function togglePlayers() {
+    if (!playersContainer.classList.contains('show')) {
+        playersContainer.style.display = 'flex';
+        requestAnimationFrame(() => {
+            playersContainer.classList.add('show');
+        });
+    } else {
+        playersContainer.classList.remove('show');
+        playersContainer.addEventListener('transitionend', function hideAfterTransition() {
+            if (!playersContainer.classList.contains('show')) {
+                playersContainer.style.display = 'none';
+            }
+            playersContainer.removeEventListener('transitionend', hideAfterTransition);
+        });
+    }
+
+    if (typeof playSCSFX === 'function') playSCSFX();
+}
+
+playersRef.on('value', (snapshot) => {
+    const players = snapshot.val() || {};
+    const count = Object.keys(players).length;
+
+    playerCounterText.textContent = `👥 Players Online: ${count}`;
+
+    playersList.innerHTML = '';
+    if (count === 0) {
+        playersList.textContent = 'No players online';
+    } else {
+        Object.values(players).forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'player-name';
+            div.textContent = p.name || 'Player';
+            playersList.appendChild(div);
+        });
+    }
+});
+
+// ------------------ ORGANIZE MOVABLE BOXES ------------------
+function organize() {
+    // Reset Players Online container
+    const playersContainer = document.getElementById('players-container');
+    if (playersContainer) {
+        playersContainer.style.left = "368px";
+        playersContainer.style.top = "20px";
+    }
+
+    // Reset Chat container
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+        chatContainer.style.left = "calc(55% + 240px)";
+        chatContainer.style.top = "445px";
+    }
+
+    // Optional: Play sound
+    if (typeof playSCSFX === 'function') {
+        playSCSFX();
+    }
+}

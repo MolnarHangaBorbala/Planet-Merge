@@ -46,14 +46,15 @@
         <div class="tooltip">
             <button id="change-name-btn" onclick="setPlayerName(), playSCSFX()">
                 <span id="change-name-text">Change Name</span>
-                <span class="tooltiptext">Change your user name. <br> <u id="red-text">The page will reload after changing the name.</u> <br> <b>Current name: <span
-                            id="player-name"></span></b></span>
+                <span class="tooltiptext">Change your user name. <br> <u id="red-text">The page will reload after
+                        changing the name.</u> <br> <b>Current name: <span id="player-name"></span></b></span>
             </button>
         </div>
         <div class="tooltip">
             <button id="delete-s-planets" class="disabled" onclick="DISABLE()">
                 <span id="deleteT">Delete</span>
-                <span class="tooltiptext">Removes all Ceres, Vesta, and Pallas planets (first three stages). <br> <b id="yellow-text">
+                <span class="tooltiptext">Removes all Ceres, Vesta, and Pallas planets (first three stages). <br> <b
+                        id="yellow-text">
                         Unlocked with Solara. </b></span>
             </button>
         </div>
@@ -71,8 +72,21 @@
         </div>
     </div>
 
-    <div id="player-counter" class="players-counter">
-        👥 Loading players...
+    <div class="organize-container" onclick="playSCSFX(), organize()">
+        <img src="../img/organize-icon.png" alt="Organize Icon" id="organize-icon">
+    </div>
+
+    <div id="player-counter" class="players-counter tooltip1" onclick="playSCSFX(), togglePlayers()">
+        <span id="players-online-text">👥 Loading players...</span>
+        <span class="tooltiptext1">Click to see online players</span>
+    </div>
+
+    <div id="players-container">
+        <div id="players-header">
+            <h3 id="players-title">Players Online</h3>
+            <button id="players-toggle" onclick="togglePlayers()">−</button>
+        </div>
+        <div id="players-online-list"></div>
     </div>
 
     <div id="sound-container">
