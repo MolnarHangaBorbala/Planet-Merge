@@ -1650,9 +1650,6 @@ class GlobalChat {
     leaveChat() {
         if (!this.onlinePlayersRef) return;
 
-        // Send leave message before removing
-        this.sendSystemMessage(`${this.playerName} left the chat`);
-
         const playerRef = this.onlinePlayersRef.child(this.playerId);
         playerRef.remove();
     }
@@ -1821,7 +1818,7 @@ class GlobalChat {
             });
         }
 
-        // Send name change message
+        // Send name change system message
         if (oldName !== newName && oldName !== 'Anonymous') {
             this.sendSystemMessage(`${oldName} changed their name to ${newName}`);
         }
@@ -1847,6 +1844,14 @@ class GlobalChat {
             });
     }
 }
+// Update player name display in UI
+function updatePlayerNameDisplay() {
+    const playerName = localStorage.getItem("playerName") || "Player";
+    const span = document.getElementById("player-name");
+    if (span) {
+        span.textContent = playerName;
+    }
+}
 
 // Initialize the chat system
 let globalChat;
@@ -1864,17 +1869,14 @@ function resetChat() {
         return;
     }
 
-    if (confirm("Are you sure you want to clear all chat messages?")) {
-        messagesRef.remove()
-            .then(() => {
-                console.log("Chat messages cleared successfully.");
-                alert("Chat cleared!");
-            })
-            .catch(err => {
-                console.error("Error clearing chat messages:", err);
-                alert("Failed to clear chat. Check console for details.");
-            });
-    }
+    messagesRef.remove()
+        .then(() => {
+            console.log("Chat messages cleared successfully.");
+        })
+        .catch(err => {
+            console.error("Error clearing chat messages:", err);
+            alert("Failed to clear chat. Check console for details.");
+        });
 }
 
 // Wait for Firebase to be ready
@@ -1912,22 +1914,32 @@ window.GlobalChat = GlobalChat;
 function setPlayerName() {
     const currentName = localStorage.getItem("playerName") || "Player";
     const newName = prompt("Enter your name:", currentName);
-    if (newName) {
-        localStorage.setItem("playerName", newName);
 
-        // Wait until globalChat exists
-        if (window.globalChat && typeof globalChat.updatePlayerName === "function") {
-            globalChat.updatePlayerName(newName);
-        } else {
-            // If chat not initialized yet, try again in 1 second
-            const interval = setInterval(() => {
-                if (window.globalChat && typeof globalChat.updatePlayerName === "function") {
-                    globalChat.updatePlayerName(newName);
-                    clearInterval(interval);
-                }
-            }, 1000);
+    if (newName && newName.trim()) {
+        localStorage.setItem("playerName", newName.trim());
+
+        // Update span UI immediately
+        const span = document.getElementById("player-name");
+        if (span) {
+            span.textContent = newName.trim();
         }
 
-        alert(`Your name is now set to: ${newName}`);
+        // Update chat instance immediately
+        if (window.globalChat && typeof globalChat.updatePlayerName === "function") {
+            globalChat.updatePlayerName(newName.trim());
+        }
+
+        alert(`Your name is now set to: ${newName}. Click "OK" to reload and continue.`);
+        // reload the current page
+        window.location.reload();
     }
 }
+
+// Set player name span on page load
+window.addEventListener("DOMContentLoaded", () => {
+    const savedName = localStorage.getItem("playerName") || "Player";
+    const span = document.getElementById("player-name");
+    if (span) {
+        span.textContent = savedName;
+    }
+});

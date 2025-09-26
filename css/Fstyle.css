@@ -1,3 +1,11 @@
+#red-text {
+    color: red;
+}
+
+#yellow-text {
+    color: yellow;
+}
+
 /* FONT */
 @font-face {
     font-family: "c-space";
@@ -374,13 +382,13 @@ html {
 
 /* Tooltip text */
 .tooltiptext {
-    border: 1px groove rgb(102, 102, 102);
+    border: 1px solid rgb(150, 150, 150);
     visibility: hidden;
     width: 260px;
     background: rgba(0, 0, 0, 0.92);
     color: #fff;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 8px 12px;
     position: absolute;
     z-index: 100;
