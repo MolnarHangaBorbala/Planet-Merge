@@ -1522,7 +1522,9 @@ function dragElement(elmnt) {
 this.isMinimized = true;
 var date = new Date();
 const notification = document.getElementById('chat-notification');
-notification.style.display = 'none';
+if (notification) {
+    notification.style.display = 'none';
+}
 class GlobalChat {
     constructor() {
         this.isMinimized = false;
@@ -1777,42 +1779,27 @@ class GlobalChat {
 
     toggleChat() {
         const container = document.getElementById('chat-container');
+        const isVisible = container.classList.contains('show');
 
-        if (!this.isMinimized) {
-
-            container.classList.remove('show');
-            container.addEventListener('transitionend', function hideAfterTransition() {
-                if (!container.classList.contains('show')) {
-                    container.style.display = 'none';
-                }
-                container.removeEventListener('transitionend', hideAfterTransition);
-            });
-            this.isMinimized = true;
-        } else {
-
+        if (!isVisible) {
+            // Show
             container.style.display = 'flex';
             requestAnimationFrame(() => {
                 container.classList.add('show');
             });
             this.isMinimized = false;
+        } else {
+            // Hide
+            container.classList.remove('show');
+            setTimeout(() => {
+                if (!container.classList.contains('show')) {
+                    container.style.display = 'none';
+                }
+            }, 200);
+            this.isMinimized = true;
         }
 
         if (typeof playSCSFX === 'function') playSCSFX();
-    }
-
-    showNotification() {
-        if (this.isMinimized) {
-            this.unreadCount++;
-            const notification = document.getElementById('chat-notification');
-            notification.textContent = this.unreadCount;
-            notification.style.display = 'flex';
-        }
-    }
-
-    clearNotifications() {
-        this.unreadCount = 0;
-        const notification = document.getElementById('chat-notification');
-        notification.style.display = 'none';
     }
 
     escapeHtml(text) {
@@ -2012,7 +1999,7 @@ function organize() {
     const playersContainer = document.getElementById('players-container');
     if (playersContainer) {
         playersContainer.style.left = "368px";
-        playersContainer.style.top = "20px";
+        playersContainer.style.top = "30px";
     }
 
     // Reset Chat container
@@ -2022,8 +2009,154 @@ function organize() {
         chatContainer.style.top = "445px";
     }
 
-    // Optional: Play sound
+    // Reset Leaderboard conatiner
+    const leaderboardContainer = document.getElementById('leaderboard-div');
+    if (leaderboardContainer) {
+        leaderboardContainer.style.left = "20px";
+        leaderboardContainer.style.top = "425px";
+    }
+
+    // Reset Planet size container
+    const PlanetContainer = document.getElementById('planet-size-box');
+    if (PlanetContainer) {
+        PlanetContainer.style.left = "20px";
+        PlanetContainer.style.top = "100px";
+    }
+
     if (typeof playSCSFX === 'function') {
         playSCSFX();
+    }
+}
+
+// -------------------- DRAG LEADERBOARD --------------------
+dragElement(document.getElementById("leaderboard-div"));
+
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    const handle = document.getElementById(elmnt.id + "players-toggle") || elmnt;
+    handle.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        const tag = e.target.tagName.toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
+
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // Add dragging class
+        elmnt.classList.add("dragging");
+
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+
+        // Remove dragging class
+        elmnt.classList.remove("dragging");
+    }
+}
+
+// -------------------- DRAG PLANET BOX --------------------
+dragElement(document.getElementById("planet-size-box"));
+
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    const handle = document.getElementById(elmnt.id + "players-toggle") || elmnt;
+    handle.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        const tag = e.target.tagName.toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
+
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // Add dragging class
+        elmnt.classList.add("dragging");
+
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+
+        // Remove dragging class
+        elmnt.classList.remove("dragging");
+    }
+}
+
+// Global function to toggle planets display
+function openplanets() {
+    const planetsizebox = document.getElementById("planet-size-box");
+    const isVisible = planetsizebox.classList.contains('show');
+
+    if (!isVisible) {
+        // Show
+        planetsizebox.style.display = 'block';
+        requestAnimationFrame(() => {
+            planetsizebox.classList.add('show');
+        });
+        if (typeof drawPlanetSizeBox === 'function') drawPlanetSizeBox();
+    } else {
+        // Hide
+        planetsizebox.classList.remove('show');
+        setTimeout(() => {
+            if (!planetsizebox.classList.contains('show')) {
+                planetsizebox.style.display = 'none';
+            }
+        }, 200);
+    }
+
+    if (typeof playSCSFX === 'function') playSCSFX();
+}
+
+// Global function to toggle leaderboard display
+function openleaderboard() {
+    const leaderboarddiv = document.getElementById("leaderboard-div");
+    const isVisible = leaderboarddiv.classList.contains('show');
+
+    if (!isVisible) {
+        // Show
+        leaderboarddiv.style.display = 'block';
+        requestAnimationFrame(() => {
+            leaderboarddiv.classList.add('show');
+        });
+    } else {
+        // Hide
+        leaderboarddiv.classList.remove('show');
+        setTimeout(() => {
+            if (!leaderboarddiv.classList.contains('show')) {
+                leaderboarddiv.style.display = 'none';
+            }
+        }, 200);
     }
 }

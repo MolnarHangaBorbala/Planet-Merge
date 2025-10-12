@@ -12,22 +12,23 @@
 
 <body id="body-div">
     <div id="radial-menu">
-        <div class="menu-btn" data-action="organize" data-label="Organize" onclick="playSCSFX(), organize()">📦</div>
-        <div class="menu-btn" data-action="planets" data-label="Planets">🪐</div>
-        <div class="menu-btn" data-action="players" data-label="Players" onclick="playSCSFX(), togglePlayers()">👥</div>
-        <div class="menu-btn" data-action="leaderboard" data-label="Leaderboard">🏆</div>
         <div class="menu-btn" data-action="cancel" data-label="Cancel">❌</div>
+        <div class="menu-btn" data-action="organize" data-label="Organize" onclick="playSCSFX(), organize()">📦</div>
+        <div class="menu-btn" data-action="chat" data-label="Chat" id="chat-icon-div" onclick="playSCSFX()">💬</div>
+        <div class="menu-btn" data-action="planets" data-label="Planets" onclick="playSCSFX(), openplanets()">🪐</div>
+        <div class="menu-btn" data-action="players" data-label="Players" onclick="playSCSFX(), togglePlayers()">👥</div>
+        <div class="menu-btn" data-action="leaderboard" data-label="Leaderboard" onclick="playSCSFX(), openleaderboard()">🏆</div>
     </div>
 
     <div class="custom-cursor"></div>
     <canvas id="stars-canvas"></canvas>
 
-    <div id="planet-size-box">
-        <canvas id="planet-size-canvas"></canvas>
-    </div>
-
     <div id="score-div">
         <p id="score-text">SCORE:</p><span id="score">0pts</span>
+    </div>
+
+    <div id="planet-size-box">
+        <canvas id="planet-size-canvas"></canvas>
     </div>
 
     <div id="leaderboard-div">
@@ -117,11 +118,6 @@
         </div>
     </div>
 
-    <div id="chat-icon-div" onclick="playSCSFX()">
-        <div id="chat-notification">0</div>
-        <img id="chat-icon" src="../img/comment.png" alt="comment icon">
-    </div>
-
     <audio id="game-over-sfx" src="../sfx/game-over.mp3" preload="auto"></audio>
     <audio id="merge-sfx" src="../sfx/merge.mp3" preload="auto"></audio>
     <audio id="spawn-sfx" src="../sfx/spawn.mp3" preload="auto"></audio>
@@ -134,9 +130,9 @@
     <script src="../js/firebase-config.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <script src="../js/Fscr.js"></script>
     <script src="../js/stars.js"></script>
     <script src="../js/radialmenuscr.js"></script>
+    <script src="../js/Fscr.js"></script>
 </body>
 
 </html>

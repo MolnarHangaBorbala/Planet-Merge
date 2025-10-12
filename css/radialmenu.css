@@ -4,6 +4,7 @@
     height: 160px;
     transform: translate(-50%, -50%);
     display: none;
+    z-index: 9998;
 }
 
 .menu-btn {
@@ -51,6 +52,7 @@
     pointer-events: none;
     transition: opacity 0.2s ease;
     white-space: nowrap;
+    z-index: 9999;
 }
 
 .menu-btn:hover::after {

@@ -121,7 +121,7 @@ html {
 /* LEFT PLANET BOX */
 #planet-size-box {
     position: absolute;
-    top: 20px;
+    top: 100px;
     left: 20px;
     width: 320px;
     height: 300px;
@@ -131,6 +131,8 @@ html {
     padding: 8px;
     overflow-y: auto;
     z-index: 1000;
+    opacity: 0;
+    display: none;
 }
 
 #planet-size-canvas {
@@ -143,7 +145,7 @@ html {
     position: absolute;
     background: rgba(255, 255, 255, 0.068);
     border: 2px solid rgba(255, 255, 255, 0.1);
-    top: 350px;
+    top: 30px;
     left: 20px;
     width: 315px;
     height: 40px;
@@ -292,6 +294,7 @@ html {
     z-index: 1000;
     overflow-y: auto;
     overflow-x: hidden;
+    display: none;
 }
 
 #leaderboard-div h3 {
@@ -620,37 +623,11 @@ html {
     }
 }
 
-/* CHAT ICON */
-#chat-icon-div {
-    bottom: 65px;
-    left: 280px;
-    position: relative;
-    background: rgba(255, 255, 255, 0.068);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 10px;
-    height: 42px;
-    width: 46px;
-    cursor: url("../img/cur/tile_0097.png"), auto;
-}
-
-#chat-icon {
-    width: 45px;
-    height: 45px;
-    opacity: 0.5;
-    cursor: url("../img/cur/tile_0097.png"), auto;
-}
-
-#chat-icon-div:hover #chat-icon {
-    opacity: 0.9;
-    transition: opacity 0.2s ease-in-out;
-}
-
 /* ONLINE PLAYERS CONTAINER */
 #players-container {
     position: absolute;
     left: 368px;
-    top: 20px;
+    top: 30px;
     width: 280px;
     height: 390px;
     background: rgba(255, 255, 255, 0.068);
@@ -662,6 +639,7 @@ html {
     opacity: 0;
     cursor: url("../img/cur/move.png"), auto;
     transition: opacity 0.2s ease-in-out;
+    display: none;
 }
 
 #players-container.show {
@@ -746,14 +724,19 @@ html {
     display: none;
 }
 
-#chat-container.show {
+#chat-container.show,
+#players-container.show,
+#leaderboard-div.show,
+#planet-size-box.show {
     opacity: 1;
     cursor: url("../img/cur/move.png"), auto;
     display: block;
 }
 
 #chat-container.dragging,
-#players-container.dragging {
+#players-container.dragging,
+#leaderboard-div.dragging,
+#planet-size-box.dragging {
     cursor: url("../img/cur/movefull.png"), move;
 }
 
