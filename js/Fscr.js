@@ -237,9 +237,8 @@ function absorbNearbyPlanets(blackhole, planets) {
 let deleteUses = 0;
 const deleteBTN = document.getElementById("delete-s-planets");
 function DISABLE() {
-    if (deleteUses <= 0) return; // Prevent use if no uses left
+    if (deleteUses <= 0) return;
 
-    // Only proceed if there are planets to delete
     const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
     if (planets.length === 0) return;
 
@@ -443,7 +442,12 @@ function initPhysics() {
     Events.on(engine, "beforeUpdate", beforeUpdateHandler);
 
     spawnHandler = handleSpawn;
-    render.canvas.addEventListener("mousedown", spawnHandler);
+    render.canvas.addEventListener("mousedown", (e) => {
+        if (e.button === 2) {
+            spawnHandler();
+        }
+    });
+
 }
 initPhysics();
 deleteBTN.addEventListener("mouseenter", () => {
@@ -1348,45 +1352,6 @@ async function clearLeaderboard() {
     }
 }
 
-/* Full Screen--------------------------------------------------------------- */
-document.addEventListener("DOMContentLoaded", () => {
-    const elementsConfig = {
-        "body-div": { default: "30px", fullscreen: "90px" },
-        "preview-container": { default: "30px", fullscreen: "90px" },
-        "leaderboard-div": { default: "425px", fullscreen: "530px" },
-        "score-div": { default: "350px", fullscreen: "440px" },
-        "planet-size-box": { default: "20px", fullscreen: "90px" },
-        "game-container": { default: "0px", fullscreen: "60px" }
-    };
-
-    const elements = {};
-    Object.keys(elementsConfig).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) elements[id] = el;
-    });
-
-    function isF11Fullscreen() {
-        return window.innerHeight === screen.height || window.outerHeight === screen.height;
-    }
-
-    function adjustTop() {
-        Object.entries(elementsConfig).forEach(([id, config]) => {
-            const el = elements[id];
-            if (!el) return;
-
-            if (isF11Fullscreen()) {
-                el.style.top = config.fullscreen;
-            } else {
-                el.style.top = config.default;
-            }
-        });
-    }
-
-    adjustTop();
-
-    window.addEventListener("resize", adjustTop);
-});
-
 // ------------------ PLAYER COUNTER ------------------
 const playerCountRef = database.ref('playerCount');
 const playersRef = database.ref('activePlayers');
@@ -2026,7 +1991,7 @@ playersRef.on('value', (snapshot) => {
     const players = snapshot.val() || {};
     const count = Object.keys(players).length;
 
-    playerCounterText.textContent = `👥 Players Online: ${count}`;
+    playerCounterText.textContent = `Players Online: ${count}`;
 
     playersList.innerHTML = '';
     if (count === 0) {
@@ -2062,5 +2027,3 @@ function organize() {
         playSCSFX();
     }
 }
-
-

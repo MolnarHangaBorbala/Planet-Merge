@@ -199,7 +199,8 @@ html {
 /* Toggle BTN */
 #toggle-physics,
 #delete-s-planets,
-#change-name-btn {
+#change-name-btn,
+#player-counter {
     margin-top: 0px;
     width: 230px;
     font-size: 20px;
@@ -217,14 +218,16 @@ html {
 #physicT:hover,
 #toggle-physics:hover,
 #delete-s-planets:hover,
-#change-name-btn:hover {
+#change-name-btn:hover,
+#player-counter:hover {
     color: beige;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
 }
 
 #toggle-physics:hover,
 #delete-s-planets:hover,
-#change-name-btn:hover {
+#change-name-btn:hover,
+#player-counter:hover {
     background-color: rgba(255, 255, 255, 0.253);
 }
 
@@ -236,6 +239,43 @@ html {
 .disabled {
     opacity: 0.5;
     pointer-events: none;
+}
+
+/* Players online */
+#player-counter {
+    margin-top: 10px;
+    width: 210px !important;
+}
+
+#players-online-text {
+    opacity: 0.5;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#player-counter:hover #players-online-text {
+    opacity: 1;
+}
+
+/* Online status indicator */
+.username.online::before {
+    content: "●";
+    color: #4CAF50;
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+.username.offline::before {
+    content: "●";
+    color: #666;
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+/* CHANGE NAME BUTTON */
+#change-name-div {
+    position: absolute;
+    text-align: center;
+    z-index: 1000;
 }
 
 /* Leaderboard */
@@ -375,15 +415,13 @@ html {
 
 /* DELETE BUTTON */
 /* Tooltip container */
-.tooltip,
-.tooltip1 {
+.tooltip {
     position: relative;
     display: inline-block;
 }
 
 /* Tooltip text */
-.tooltiptext,
-.tooltiptext1 {
+.tooltiptext {
     border: 1px solid rgb(150, 150, 150);
     visibility: hidden;
     background: rgba(0, 0, 0, 0.92);
@@ -402,13 +440,6 @@ html {
     pointer-events: none;
 }
 
-.tooltiptext1 {
-    font-size: 10px;
-    width: 170px;
-    transform: translateX(60%);
-    top: 0%;
-}
-
 .tooltiptext {
     transform: translateX(-50%);
     width: 260px;
@@ -416,9 +447,7 @@ html {
 }
 
 .tooltip:hover .tooltiptext,
-.tooltip:focus-within .tooltiptext,
-.tooltip1:hover .tooltiptext1,
-.tooltip1:focus-within .tooltiptext1 {
+.tooltip:focus-within .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
@@ -431,11 +460,11 @@ html {
 
 /* ORGANIZE ICON */
 .organize-container {
-    position: absolute;
-    bottom: 95px;
-    left: 19px;
+    left: 355px;
+    position: relative;
     width: 50px;
     height: 50px;
+    bottom: 120px;
     background: rgba(255, 255, 255, 0.068);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -453,29 +482,6 @@ html {
 .organize-container:hover #organize-icon {
     opacity: 0.8;
     transition: opacity 0.2s ease-in-out;
-}
-
-/* PLAYERS ONLINE */
-#player-counter {
-    color: white;
-    position: absolute;
-    bottom: 95px;
-    left: 80px;
-    font-size: 16px;
-    padding: 5px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.068);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    cursor: url("../img/cur/tile_0097.png"), auto;
-}
-
-#players-online-text {
-    opacity: 0.5;
-    transition: opacity 0.2s ease-in-out;
-}
-
-#player-counter:hover #players-online-text {
-    opacity: 1;
 }
 
 /* SOUND */
@@ -662,17 +668,13 @@ html {
     opacity: 1;
 }
 
-.player-name {
-    color: #2bc94d;
-    font-size: 16px;
-    padding: 6px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.212);
-    display: flex;
-}
-
 .player-name:first-child {
     border-top: 1px solid rgba(255, 255, 255, 0.212);
     border-radius: 8px 8px 0 0;
+}
+
+.player-name:last-child {
+    border-radius: 0 0 8px 8px;
 }
 
 .player-name:nth-child(odd) {
@@ -683,11 +685,46 @@ html {
     background: rgba(36, 36, 36, 0.2);
 }
 
+@keyframes terminal-glitch {
+
+    0%,
+    90%,
+    100% {
+        text-shadow: 0 0 3px rgba(51, 255, 51, 0.8);
+        transform: translateX(0);
+        color: #33ff33;
+    }
+
+    95% {
+        text-shadow: 2px 0 0 #ff0040, -2px 0 0 #33ff33, 0 0 3px rgba(51, 255, 51, 0.8);
+        transform: translateX(-2px);
+        color: #44ff44;
+    }
+
+    97% {
+        text-shadow: -1px 0 0 #ff0040, 1px 0 0 #33ff33, 0 0 3px rgba(51, 255, 51, 0.8);
+        transform: translateX(1px);
+        color: #22ff22;
+    }
+}
+
+.player-name {
+    font-family: 'Share Tech Mono', monospace;
+    color: #33ff33;
+    font-size: 15px;
+    text-shadow: 0 0 3px rgba(51, 255, 51, 0.8);
+    background: rgba(0, 51, 0, 0.1);
+    padding: 4px 8px;
+    border-left: 2px solid #33ff33;
+    animation: terminal-glitch 4s infinite;
+    font-size: 15px;
+}
+
 .player-name::before {
-    content: "●";
-    color: #22a03d;
-    margin-right: 4px;
-    font-size: 16px;
+    content: "> ";
+    color: #66ff66;
+    font-weight: bold;
+    margin-right: 5px;
 }
 
 /* GLOBAL CHAT CONTAINER */
@@ -704,12 +741,15 @@ html {
     flex-direction: column;
     overflow: hidden;
     opacity: 0;
-    cursor: url("../img/cur/move.png"), auto;
+    cursor: url("../img/cur/tile_0086.png"), auto;
     transition: opacity 0.2s ease-in-out;
+    display: none;
 }
 
 #chat-container.show {
     opacity: 1;
+    cursor: url("../img/cur/move.png"), auto;
+    display: block;
 }
 
 #chat-container.dragging,
@@ -901,26 +941,4 @@ html {
     100% {
         transform: scale(1);
     }
-}
-
-/* Online status indicator */
-.username.online::before {
-    content: "●";
-    color: #4CAF50;
-    margin-right: 4px;
-    font-size: 12px;
-}
-
-.username.offline::before {
-    content: "●";
-    color: #666;
-    margin-right: 4px;
-    font-size: 12px;
-}
-
-/* CHANGE NAME BUTTON */
-#change-name-div {
-    position: absolute;
-    text-align: center;
-    z-index: 1000;
 }

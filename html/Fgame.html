@@ -6,10 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planet Merge</title>
     <link rel="stylesheet" href="../css/Fstyle.css">
+    <link rel="stylesheet" href="../css/radialmenu.css">
     <link rel="shortcut icon" href="../img/icons8-planet-32.png" type="image/x-icon">
 </head>
 
 <body id="body-div">
+    <div id="radial-menu">
+        <div class="menu-btn" data-action="organize" data-label="Organize" onclick="playSCSFX(), organize()">📦</div>
+        <div class="menu-btn" data-action="planets" data-label="Planets">🪐</div>
+        <div class="menu-btn" data-action="players" data-label="Players" onclick="playSCSFX(), togglePlayers()">👥</div>
+        <div class="menu-btn" data-action="leaderboard" data-label="Leaderboard">🏆</div>
+        <div class="menu-btn" data-action="cancel" data-label="Cancel">❌</div>
+    </div>
+
     <div class="custom-cursor"></div>
     <canvas id="stars-canvas"></canvas>
 
@@ -50,6 +59,10 @@
                         changing the name.</u> <br> <b>Current name: <span id="player-name"></span></b></span>
             </button>
         </div>
+        <div id="player-counter" class="players-counter tooltip" onclick="playSCSFX(), togglePlayers()">
+            <span id="players-online-text">Loading players...</span>
+            <span class="tooltiptext">Click to see online players</span>
+        </div>
         <div class="tooltip">
             <button id="delete-s-planets" class="disabled" onclick="DISABLE()">
                 <span id="deleteT">Delete</span>
@@ -70,15 +83,6 @@
             <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200">
             <button id="chat-send">Send</button>
         </div>
-    </div>
-
-    <div class="organize-container" onclick="playSCSFX(), organize()">
-        <img src="../img/organize-icon.png" alt="Organize Icon" id="organize-icon">
-    </div>
-
-    <div id="player-counter" class="players-counter tooltip1" onclick="playSCSFX(), togglePlayers()">
-        <span id="players-online-text">👥 Loading players...</span>
-        <span class="tooltiptext1">Click to see online players</span>
     </div>
 
     <div id="players-container">
@@ -132,6 +136,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <script src="../js/Fscr.js"></script>
     <script src="../js/stars.js"></script>
+    <script src="../js/radialmenuscr.js"></script>
 </body>
 
 </html>
