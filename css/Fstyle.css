@@ -214,7 +214,7 @@ html {
     font-family: c-space;
     cursor: url("../img/cur/tile_0097.png"), auto;
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, text-shadow 0.2s ease-in-out, scale 1s ease-in-out;
 }
 
 #physicT:hover,
@@ -231,6 +231,7 @@ html {
 #change-name-btn:hover,
 #player-counter:hover {
     background-color: rgba(255, 255, 255, 0.253);
+    transform: scale(1.05);
 }
 
 #delete-s-planets,

@@ -32,7 +32,7 @@ function toggleSound() {
         soundIcon.style.width = "50px";
         soundContainer.classList.remove("paused");
 
-        fadeVolume(bgMusic, 0.8, 750);
+        fadeVolume(bgMusic, 0.4, 750);
         paused = true;
     } else {
         fadeVolume(bgMusic, 0, 750);
@@ -112,8 +112,6 @@ document.addEventListener("mousemove", (e) => {
     cursor.style.left = e.clientX + "px";
 });
 // ------------------------------------
-
-// remember toggle in localStorage
 let useRealisticPhysics = localStorage.getItem("useRealisticPhysics") === "true";
 
 const physicText = document.getElementById("physicT");
@@ -130,10 +128,9 @@ document.getElementById("toggle-physics").addEventListener("click", () => {
 
     currentGameMode = useRealisticPhysics ? "realistic" : "arcade";
     playSCSFX();
-    alert("Physics mode: " + (useRealisticPhysics ? "Realistic" : "Arcade"));
     updatePhysicsText();
     initPhysics();
-    updateLeaderboardDisplay(); // refresh leaderboard immediately
+    updateLeaderboardDisplay();
 });
 
 // ------------------ PLANETS ------------------
@@ -174,6 +171,7 @@ let runner = null;
 let collisionHandler = null;
 let beforeUpdateHandler = null;
 let spawnHandler = null;
+let canvasMouseHandler = null;
 
 function handleSpawn(e) {
     if (inputLocked) return;
@@ -256,8 +254,9 @@ function initPhysics() {
         try { Render.stop(render); } catch (err) { }
 
         try {
-            if (render && render.canvas && spawnHandler) {
-                render.canvas.removeEventListener("mousedown", spawnHandler);
+            if (render && render.canvas && canvasMouseHandler) {
+                render.canvas.removeEventListener("mousedown", canvasMouseHandler);
+                canvasMouseHandler = null;
             }
         } catch (err) { }
 
@@ -442,14 +441,31 @@ function initPhysics() {
     Events.on(engine, "beforeUpdate", beforeUpdateHandler);
 
     spawnHandler = handleSpawn;
-    render.canvas.addEventListener("mousedown", (e) => {
-        if (e.button === 2) {
-            spawnHandler();
-        }
-    });
-
+    attachSpawnHandler();
 }
+
+function attachSpawnHandler() {
+    if (!render || !render.canvas) return;
+
+    try {
+        if (canvasMouseHandler && render.canvas) {
+            render.canvas.removeEventListener('mousedown', canvasMouseHandler);
+        }
+    } catch (e) { /* ignore */ }
+
+    canvasMouseHandler = function (e) {
+        if (e.button !== 0) return;
+
+        if (typeof handleSpawn === 'function') {
+            handleSpawn(e);
+        }
+    };
+
+    render.canvas.addEventListener('mousedown', canvasMouseHandler);
+}
+
 initPhysics();
+
 deleteBTN.addEventListener("mouseenter", () => {
     if (!deleteBTN.classList.contains("disabled")) {
         const planets = world.bodies.filter(b => b.label === "planet" && b.stage >= 0 && b.stage <= 2);
