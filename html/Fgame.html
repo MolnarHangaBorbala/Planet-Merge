@@ -18,6 +18,7 @@
         <div class="menu-btn" data-action="planets" data-label="Planets" onclick="playSCSFX(), openplanets()">🪐</div>
         <div class="menu-btn" data-action="players" data-label="Players" onclick="playSCSFX(), togglePlayers()">👥</div>
         <div class="menu-btn" data-action="leaderboard" data-label="Leaderboard" onclick="playSCSFX(), openleaderboard()">🏆</div>
+        <div class="menu-btn" data-action="music" data-label="Music" onclick="toggleSound(), playSCSFX()">🔊</div>
     </div>
 
     <div class="custom-cursor"></div>
@@ -92,30 +93,6 @@
             <button id="players-toggle" onclick="togglePlayers()">−</button>
         </div>
         <div id="players-online-list"></div>
-    </div>
-
-    <div id="sound-container">
-        <div id="sound-div" onclick="toggleSound(), playSCSFX()">
-            <img id="sound-icon" src="../img/sound-off.png" alt="Sound Icon">
-            <div class="equalizer" id="eq-id">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </div>
     </div>
 
     <audio id="game-over-sfx" src="../sfx/game-over.mp3" preload="auto"></audio>

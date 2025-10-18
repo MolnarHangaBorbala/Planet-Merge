@@ -18,28 +18,17 @@ const spawnSound = document.getElementById("spawn-sfx");
 const softClickSound = document.getElementById("soft-click-sfx");
 const bgMusic = document.getElementById("bg-music");
 
-const soundIcon = document.getElementById("sound-icon");
-const soundContainer = document.getElementById("eq-id");
 
 bgMusic.volume = 0;
 let paused = false;
-soundContainer.classList.add("paused");
 
 function toggleSound() {
     if (!paused) {
         bgMusic.play();
-        soundIcon.src = "../img/sound-on.png";
-        soundIcon.style.width = "50px";
-        soundContainer.classList.remove("paused");
-
         fadeVolume(bgMusic, 0.4, 750);
         paused = true;
     } else {
         fadeVolume(bgMusic, 0, 750);
-        soundIcon.src = "../img/sound-off.png";
-        soundIcon.style.width = "32px";
-        soundContainer.classList.add("paused");
-
         paused = false;
     }
 }
